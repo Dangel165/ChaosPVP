@@ -186,7 +186,7 @@
 
 이 플러그인은 다음을 사용합니다:
 - **Paper API 1.21.11** - 마인크래프트 서버 통합
-- **LibsDisguises** - 생명체 직업 변신 기능
+- **LibsDisguises** - 생명체 직업 변신 기능(외부 플러그인)
 - **Gradle 8.5** - 빌드 자동화
 - **Java 21** - 프로그래밍 언어
 - **JUnit 5** - 단위 테스트 프레임워크
@@ -243,4 +243,5 @@ MIT 라이선스
 - **맵 제작**: 145wir, ssadw1348, gyangsongsanghyeoninde
 - **밸런스 조정**: 145wir
 - **기획**: 145wir, ssadw1348 
+
 
