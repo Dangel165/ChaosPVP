@@ -1,0 +1,91 @@
+name: ChaosPVP
+version: '3.0.2'
+main: com.verminpvp.VerminPVP
+api-version: '1.21'
+author: ChaosPVP Team
+description: A class-based PVP system with 8 unique character classes
+website: https://github.com/chaospvp
+depend: [LibsDisguises]
+
+commands:
+  chaospvp:
+    description: Main command for ChaosPVP
+    usage: /chaospvp <help|class|info|reload>
+    aliases: [cpvp, cp, verminpvp]
+    permission: chaospvp.use
+  게임시작:
+    description: Open class selection GUI
+    usage: /게임시작
+    permission: chaospvp.use
+  게임종료:
+    description: End the game and reset all players
+    usage: /게임종료
+    permission: chaospvp.admin
+  게임모드:
+    description: Set game mode (team or solo)
+    usage: /게임모드 <팀전|개인전>
+    permission: chaospvp.admin
+  연습모드시작:
+    description: Start practice mode with class selection
+    usage: /연습모드시작
+    permission: chaospvp.use
+  도움말:
+    description: Show help message
+    usage: /도움말
+    permission: chaospvp.use
+  인원제외:
+    description: Exclude player from game
+    usage: /인원제외 <플레이어명>
+    permission: chaospvp.admin
+  인원추가:
+    description: Include previously excluded player back into game
+    usage: /인원추가 <플레이어명>
+    permission: chaospvp.admin
+  로비:
+    description: Set or teleport to lobby location
+    usage: /로비 [지정]
+    permission: chaospvp.use
+  로비제거:
+    description: Remove lobby location
+    usage: /로비제거
+    permission: chaospvp.admin
+  입자끄기:
+    description: Remove all area effect clouds (poison fields)
+    usage: /입자끄기
+    permission: chaospvp.admin
+  연습모드:
+    description: Practice mode commands
+    usage: /연습모드 [맵 <맵이름>]
+    permission: chaospvp.use
+  연습모드종료:
+    description: End practice mode
+    usage: /연습모드종료
+    permission: chaospvp.use
+  연습클래스:
+    description: Open class selection GUI in practice mode
+    usage: /연습클래스
+    permission: chaospvp.use
+  1번맵지정:
+    description: Set the first map slot for voting
+    usage: /1번맵지정 [맵이름]
+    permission: chaospvp.admin
+  2번맵지정:
+    description: Set the second map slot for voting
+    usage: /2번맵지정 [맵이름]
+    permission: chaospvp.admin
+  1번스폰추가:
+    description: Add a spawn point for map slot 1
+    usage: /1번스폰추가
+    permission: chaospvp.admin
+  2번스폰추가:
+    description: Add a spawn point for map slot 2
+    usage: /2번스폰추가
+    permission: chaospvp.admin
+
+permissions:
+  chaospvp.use:
+    description: Allows using basic ChaosPVP commands
+    default: true
+  chaospvp.admin:
+    description: Allows using admin commands
+    default: op
