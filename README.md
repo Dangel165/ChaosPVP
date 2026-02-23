@@ -1,5 +1,7 @@
 # ChaosPVP (대혼란 PVP)
 
+플러그인 다운:https://hangar.papermc.io/Dangel165/ChaosPVP
+
 13개의 고유한 직업 시스템을 갖춘 PVP 플러그인입니다.
 
 ## 주요 기능
@@ -248,4 +250,5 @@ MIT 라이선스
 - **맵 제작**: 145wir, ssadw1348, gyangsongsanghyeoninde
 - **밸런스 조정**: 145wir
 - **기획**: 145wir, ssadw1348 
+
 
