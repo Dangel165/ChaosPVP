@@ -1,6 +1,6 @@
 name: ChaosPVP
-version: '1.0.0'
-main: com.chaospvp.ChaosPVP
+version: '3.0.0'
+main: com.verminpvp.VerminPVP
 api-version: '1.21'
 author: ChaosPVP Team
 description: A class-based PVP system with 8 unique character classes
@@ -11,12 +11,12 @@ commands:
   chaospvp:
     description: Main command for ChaosPVP
     usage: /chaospvp <help|class|info|reload>
-    aliases: [cpvp, cp]
+    aliases: [cpvp, cp, verminpvp]
     permission: chaospvp.use
   게임시작:
     description: Open class selection GUI
     usage: /게임시작
-    permission: verminpvp.use
+    permission: chaospvp.use
   게임종료:
     description: End the game and reset all players
     usage: /게임종료
