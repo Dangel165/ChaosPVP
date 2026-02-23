@@ -1,0 +1,95 @@
+{
+  "stats": {
+    "minecraft:broken": {
+      "minecraft:wooden_sword": 22
+    },
+    "minecraft:crafted": {
+      "minecraft:wooden_sword": 1
+    },
+    "minecraft:picked_up": {
+      "minecraft:stone_pressure_plate": 1,
+      "minecraft:lantern": 1,
+      "minecraft:lingering_potion": 124,
+      "minecraft:ladder": 3,
+      "minecraft:potion": 7,
+      "minecraft:splash_potion": 12,
+      "minecraft:golden_apple": 1
+    },
+    "minecraft:used": {
+      "minecraft:trident": 48,
+      "minecraft:observer": 22,
+      "minecraft:lingering_potion": 80,
+      "minecraft:panda_spawn_egg": 35,
+      "minecraft:diamond_sword": 4,
+      "minecraft:black_concrete": 1,
+      "minecraft:water_bucket": 66,
+      "minecraft:golden_sword": 3,
+      "minecraft:wooden_sword": 23,
+      "minecraft:ladder": 47,
+      "minecraft:white_concrete_powder": 10,
+      "minecraft:torch": 4,
+      "minecraft:quartz_block": 2,
+      "minecraft:stone_sword": 99,
+      "minecraft:white_concrete": 3,
+      "minecraft:oak_button": 1,
+      "minecraft:spruce_door": 1,
+      "minecraft:oak_stairs": 1,
+      "minecraft:hopper": 3,
+      "minecraft:golden_apple": 1,
+      "minecraft:note_block": 54,
+      "minecraft:bucket": 63,
+      "minecraft:chest": 8,
+      "minecraft:splash_potion": 402,
+      "minecraft:potion": 70,
+      "minecraft:oak_fence_gate": 1
+    },
+    "minecraft:custom": {
+      "minecraft:talked_to_villager": 19,
+      "minecraft:time_since_rest": 31216,
+      "minecraft:leave_game": 11,
+      "minecraft:mob_kills": 38,
+      "minecraft:damage_taken": 21241,
+      "minecraft:damage_absorbed": 40,
+      "minecraft:time_since_death": 31215,
+      "minecraft:damage_dealt_absorbed": 140,
+      "minecraft:inspect_dispenser": 7,
+      "minecraft:total_world_time": 193699,
+      "minecraft:swim_one_cm": 27752,
+      "minecraft:crouch_one_cm": 28045,
+      "minecraft:climb_one_cm": 25286,
+      "minecraft:deaths": 28,
+      "minecraft:player_kills": 11,
+      "minecraft:damage_resisted": 780,
+      "minecraft:walk_one_cm": 561285,
+      "minecraft:walk_under_water_one_cm": 15414,
+      "minecraft:play_time": 193699,
+      "minecraft:damage_dealt": 6923,
+      "minecraft:jump": 1902,
+      "minecraft:drop": 182,
+      "minecraft:bell_ring": 14,
+      "minecraft:sprint_one_cm": 286979,
+      "minecraft:open_chest": 12,
+      "minecraft:fall_one_cm": 196087,
+      "minecraft:tune_noteblock": 90,
+      "minecraft:fly_one_cm": 708619,
+      "minecraft:walk_on_water_one_cm": 13632,
+      "minecraft:sneak_time": 13422
+    },
+    "minecraft:killed_by": {
+      "minecraft:player": 9
+    },
+    "minecraft:killed": {
+      "minecraft:zombie": 15,
+      "minecraft:panda": 3,
+      "minecraft:villager": 15
+    },
+    "minecraft:dropped": {
+      "minecraft:glass_bottle": 1,
+      "minecraft:splash_potion": 62,
+      "minecraft:milk_bucket": 1,
+      "minecraft:potion": 14,
+      "minecraft:lingering_potion": 104
+    }
+  },
+  "DataVersion": 4671
+}

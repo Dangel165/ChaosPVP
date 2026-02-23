@@ -1,0 +1,80 @@
+{
+  "stats": {
+    "minecraft:custom": {
+      "minecraft:time_since_rest": 223663,
+      "minecraft:leave_game": 5,
+      "minecraft:mob_kills": 4,
+      "minecraft:damage_taken": 10084,
+      "minecraft:boat_one_cm": 656,
+      "minecraft:time_since_death": 223662,
+      "minecraft:damage_dealt_absorbed": 129,
+      "minecraft:total_world_time": 428070,
+      "minecraft:swim_one_cm": 14715,
+      "minecraft:crouch_one_cm": 5695,
+      "minecraft:climb_one_cm": 14302,
+      "minecraft:deaths": 32,
+      "minecraft:player_kills": 17,
+      "minecraft:damage_resisted": 155,
+      "minecraft:walk_one_cm": 490143,
+      "minecraft:walk_under_water_one_cm": 10782,
+      "minecraft:play_time": 428070,
+      "minecraft:damage_dealt": 7499,
+      "minecraft:jump": 3134,
+      "minecraft:drop": 1,
+      "minecraft:sprint_one_cm": 389555,
+      "minecraft:open_chest": 1,
+      "minecraft:fall_one_cm": 72827,
+      "minecraft:fly_one_cm": 4562680,
+      "minecraft:interact_with_anvil": 3,
+      "minecraft:walk_on_water_one_cm": 11113,
+      "minecraft:sneak_time": 13963
+    },
+    "minecraft:killed": {
+      "minecraft:panda": 3
+    },
+    "minecraft:used": {
+      "minecraft:polished_diorite": 16,
+      "minecraft:quartz_pillar": 433,
+      "minecraft:quartz_bricks": 7,
+      "minecraft:smooth_quartz_slab": 266,
+      "minecraft:iron_sword": 10,
+      "minecraft:spruce_log": 252,
+      "minecraft:black_concrete": 16,
+      "minecraft:polished_diorite_stairs": 49,
+      "minecraft:wooden_sword": 36,
+      "minecraft:anvil": 2,
+      "minecraft:quartz_block": 1421,
+      "minecraft:red_wool": 1,
+      "minecraft:stone_sword": 181,
+      "minecraft:iron_chain": 22,
+      "minecraft:quartz_slab": 127,
+      "minecraft:white_concrete": 3,
+      "minecraft:stone_button": 4,
+      "minecraft:copper_sword": 2,
+      "minecraft:white_wool": 697,
+      "minecraft:polished_andesite": 87,
+      "minecraft:smooth_quartz_stairs": 77,
+      "minecraft:sculk_sensor": 6,
+      "minecraft:smooth_quartz": 231,
+      "minecraft:polished_andesite_stairs": 236,
+      "minecraft:polished_andesite_slab": 11,
+      "minecraft:quartz_stairs": 1280,
+      "minecraft:pointed_dripstone": 13
+    },
+    "minecraft:killed_by": {
+      "minecraft:player": 16,
+      "minecraft:silverfish": 1
+    },
+    "minecraft:dropped": {
+      "minecraft:stone_pressure_plate": 1
+    },
+    "minecraft:broken": {
+      "minecraft:wooden_sword": 36
+    },
+    "minecraft:picked_up": {
+      "minecraft:stone_pressure_plate": 4,
+      "minecraft:potion": 1
+    }
+  },
+  "DataVersion": 4671
+}
