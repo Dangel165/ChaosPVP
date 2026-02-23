@@ -281,9 +281,10 @@ MIT 라이선스
 ## 제작자
 
 - **플러그인 제작**: Dangel
-- **맵 제작**: 145wir, ssadw1348, gyangsongsanghyeoninde
+- **맵 제작**: 145wir, ssadw1348, gyangsongsanghyeoninde,galaxy0596
 - **밸런스 조정**: 145wir
 - **기획**: 145wir, ssadw1348 
+
 
 
 
