@@ -42,9 +42,12 @@ public class EndGameCommand implements CommandExecutor {
             // Clear inventory
             player.getInventory().clear();
             
-            // Remove ALL potion effects
+            // Remove ALL potion effects except SATURATION and NIGHT_VISION
             for (org.bukkit.potion.PotionEffectType effectType : org.bukkit.potion.PotionEffectType.values()) {
-                if (effectType != null && player.hasPotionEffect(effectType)) {
+                if (effectType != null && 
+                    effectType != org.bukkit.potion.PotionEffectType.SATURATION && 
+                    effectType != org.bukkit.potion.PotionEffectType.NIGHT_VISION &&
+                    player.hasPotionEffect(effectType)) {
                     player.removePotionEffect(effectType);
                 }
             }

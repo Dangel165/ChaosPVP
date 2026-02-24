@@ -876,6 +876,11 @@ public class GameManager {
         if (pluginInstance.getJugglerHandler() != null) {
             pluginInstance.getJugglerHandler().cleanupAll();
         }
+        
+        // Clean up Time Engraver frozen entities and effects
+        if (pluginInstance.getTimeEngraverHandler() != null) {
+            pluginInstance.getTimeEngraverHandler().cleanupAll();
+        }
     }
     
     /**
@@ -941,12 +946,18 @@ public class GameManager {
     
     /**
      * Remove game effects from a player
+     * Removes all potion effects except SATURATION and NIGHT_VISION
      */
     public void removeGameEffects(Player player) {
-        player.removePotionEffect(PotionEffectType.SATURATION);
-        player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-        player.removePotionEffect(PotionEffectType.GLOWING);
-        player.removePotionEffect(PotionEffectType.MINING_FATIGUE);
+        // Remove ALL potion effects except SATURATION and NIGHT_VISION
+        for (PotionEffectType effectType : PotionEffectType.values()) {
+            if (effectType != null && 
+                effectType != PotionEffectType.SATURATION && 
+                effectType != PotionEffectType.NIGHT_VISION &&
+                player.hasPotionEffect(effectType)) {
+                player.removePotionEffect(effectType);
+            }
+        }
     }
     
     /**

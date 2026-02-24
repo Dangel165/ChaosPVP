@@ -31,6 +31,16 @@ public class PlayerRespawnHandler implements Listener {
             return;
         }
         
+        // Get the world where player died
+        org.bukkit.World deathWorld = player.getWorld();
+        
+        // Set respawn location to the world spawn of the death world
+        // This ensures players respawn in the same world they died in
+        if (deathWorld != null) {
+            org.bukkit.Location respawnLocation = deathWorld.getSpawnLocation();
+            event.setRespawnLocation(respawnLocation);
+        }
+        
         // Set player to spectator mode after respawn
         // Use scheduler to ensure it happens after respawn completes
         org.bukkit.Bukkit.getScheduler().runTaskLater(

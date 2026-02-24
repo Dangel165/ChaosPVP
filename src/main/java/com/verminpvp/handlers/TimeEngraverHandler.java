@@ -99,6 +99,12 @@ public class TimeEngraverHandler implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
+        
+        // Only enforce freeze if game is active
+        if (!gameManager.isGameActive()) {
+            return;
+        }
+        
         Location frozenLoc = frozenEntities.get(player.getUniqueId());
         if (frozenLoc != null) {
             // Check if player moved from frozen position
@@ -413,9 +419,11 @@ public class TimeEngraverHandler implements Listener {
         
         // Check if target has slowness effect (구속 효과)
         if (target.hasPotionEffect(PotionEffectType.SLOWNESS)) {
-            // Apply instant damage of 8 (4 hearts) if target has slowness
+            // Apply base damage of 6 (3 hearts)
+            damageHandler.applyInstantDamage(target, 6.0);
+            // Apply bonus damage of 8 (4 hearts) if target has slowness
             damageHandler.applyInstantDamage(target, 8.0);
-            shooter.sendMessage("§e시곗바늘 적중! §6+구속 보너스 피해");
+            shooter.sendMessage("§e시곗바늘 적중! §6+구속 보너스 피해 (총 14 피해)");
         } else {
             // Apply base damage of 6 (3 hearts)
             damageHandler.applyInstantDamage(target, 6.0);
