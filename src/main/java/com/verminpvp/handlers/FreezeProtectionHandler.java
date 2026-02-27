@@ -36,9 +36,8 @@ public class FreezeProtectionHandler implements Listener {
             return;
         }
         
-        // Check if either player has slowness effect (freeze period)
-        if (victim.hasPotionEffect(PotionEffectType.SLOWNESS) || 
-            attacker.hasPotionEffect(PotionEffectType.SLOWNESS)) {
+        // Check if in freeze period using GameManager
+        if (gameManager.isInFreezePeriod()) {
             // Cancel damage during freeze period
             event.setCancelled(true);
             attacker.sendMessage("§c프리즈 기간 동안에는 공격할 수 없습니다!");
@@ -54,8 +53,8 @@ public class FreezeProtectionHandler implements Listener {
             return;
         }
         
-        // Check if player has slowness effect (freeze period)
-        if (player.hasPotionEffect(PotionEffectType.SLOWNESS)) {
+        // Check if in freeze period using GameManager
+        if (gameManager.isInFreezePeriod()) {
             // Get from and to locations
             Location from = event.getFrom();
             Location to = event.getTo();

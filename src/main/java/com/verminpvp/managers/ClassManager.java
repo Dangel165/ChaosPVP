@@ -38,6 +38,7 @@ public class ClassManager {
     private Object swordsmanHandler;
     private Object stamperHandler;
     private Object timeEngraverHandler;
+    private Object cavalryHandler;
     
     public ClassManager() {
         this.playerClasses = new HashMap<>();
@@ -69,7 +70,9 @@ public class ClassManager {
                            Object criticalCutterHandler, Object shapeshifterHandler,
                            Object jugglerHandler, Object dragonFuryHandler,
                            Object undeadHandler, Object swordsmanHandler,
-                           Object stamperHandler, Object timeEngraverHandler) {
+                           Object stamperHandler, Object timeEngraverHandler,
+                           Object cavalryHandler, Object vitalityCutterHandler,
+                           Object marathonerHandler) {
         this.scientistHandler = scientistHandler;
         this.plagueSpreaderHandler = plagueSpreaderHandler;
         this.shieldSoldierHandler = shieldSoldierHandler;
@@ -82,6 +85,7 @@ public class ClassManager {
         this.swordsmanHandler = swordsmanHandler;
         this.stamperHandler = stamperHandler;
         this.timeEngraverHandler = timeEngraverHandler;
+        this.cavalryHandler = cavalryHandler;
     }
     
     /**
@@ -183,6 +187,13 @@ public class ClassManager {
                         stamperHandler.getClass()
                             .getMethod("startDiveGainSystem", Player.class)
                             .invoke(stamperHandler, player);
+                    }
+                    break;
+                case CAVALRY:
+                    if (cavalryHandler != null) {
+                        cavalryHandler.getClass()
+                            .getMethod("applyPassiveEffect", Player.class)
+                            .invoke(cavalryHandler, player);
                     }
                     break;
             }
@@ -296,6 +307,15 @@ public class ClassManager {
             case TIME_ENGRAVER:
                 player.getInventory().addItem(itemProvider.createSpecialItem(ClassType.TIME_ENGRAVER, "time_engrave"));
                 player.getInventory().addItem(itemProvider.createSpecialItem(ClassType.TIME_ENGRAVER, "clock_needle_stitch"));
+                break;
+                
+            case CAVALRY:
+                player.getInventory().addItem(itemProvider.createSpecialItem(ClassType.CAVALRY, "mount_dismount"));
+                player.getInventory().addItem(itemProvider.createSpecialItem(ClassType.CAVALRY, "sweep"));
+                break;
+                
+            case MARATHONER:
+                player.getInventory().addItem(itemProvider.createSpecialItem(ClassType.MARATHONER, "crouching_start"));
                 break;
         }
     }

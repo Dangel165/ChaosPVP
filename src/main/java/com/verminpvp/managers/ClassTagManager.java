@@ -85,6 +85,12 @@ public class ClassTagManager {
                 return ChatColor.AQUA + "[스탬퍼] " + ChatColor.RESET;
             case TIME_ENGRAVER:
                 return ChatColor.GOLD + "[시간 각인자] " + ChatColor.RESET;
+            case CAVALRY:
+                return ChatColor.DARK_AQUA + "[기마병] " + ChatColor.RESET;
+            case VITALITY_CUTTER:
+                return ChatColor.RED + "[활력 절단자] " + ChatColor.RESET;
+            case MARATHONER:
+                return ChatColor.AQUA + "[마라토너] " + ChatColor.RESET;
             default:
                 return ChatColor.GRAY + "[???] " + ChatColor.RESET;
         }
@@ -121,6 +127,12 @@ public class ClassTagManager {
                 return ChatColor.AQUA;
             case TIME_ENGRAVER:
                 return ChatColor.GOLD;
+            case CAVALRY:
+                return ChatColor.DARK_AQUA;
+            case VITALITY_CUTTER:
+                return ChatColor.RED;
+            case MARATHONER:
+                return ChatColor.AQUA;
             default:
                 return ChatColor.GRAY;
         }
@@ -167,9 +179,11 @@ public class ClassTagManager {
                 // In solo mode, use class color
                 team.setColor(getClassColor(classType));
                 
-                // Enable glow for Dragon Fury and Undead
+                // Enable glow for specific classes in solo mode only
                 if (classType == ClassType.DRAGON_FURY || 
-                    classType == ClassType.UNDEAD) {
+                    classType == ClassType.UNDEAD ||
+                    classType == ClassType.CAVALRY ||
+                    classType == ClassType.VITALITY_CUTTER) {
                     player.setGlowing(true);
                 } else {
                     player.setGlowing(false);

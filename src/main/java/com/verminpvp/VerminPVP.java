@@ -69,6 +69,9 @@ public class VerminPVP extends JavaPlugin {
     private UndeadHandler undeadHandler;
     private StamperHandler stamperHandler;
     private TimeEngraverHandler timeEngraverHandler;
+    private CavalryHandler cavalryHandler;
+    private VitalityCutterHandler vitalityCutterHandler;
+    private MarathonerHandler marathonerHandler;
     private WorldProtectionHandler worldProtectionHandler;
     private TeamKillPreventionHandler teamKillPreventionHandler;
     private PlayerDeathHandler playerDeathHandler;
@@ -200,6 +203,14 @@ public class VerminPVP extends JavaPlugin {
         timeEngraverHandler = new TimeEngraverHandler(this, classManager, cooldownManager,
             itemProvider, damageHandler, effectApplicator, teamManager, gameManager);
         
+        cavalryHandler = new CavalryHandler(this, classManager, cooldownManager,
+            itemProvider, damageHandler);
+        
+        vitalityCutterHandler = new VitalityCutterHandler(this, classManager,
+            damageHandler, gameManager, teamManager);
+        
+        marathonerHandler = new MarathonerHandler(this, classManager, cooldownManager, itemProvider);
+        
         worldProtectionHandler = new WorldProtectionHandler(gameManager);
         
         teamKillPreventionHandler = new TeamKillPreventionHandler(gameManager, teamManager);
@@ -230,7 +241,8 @@ public class VerminPVP extends JavaPlugin {
         classManager.setHandlers(scientistHandler, plagueSpreaderHandler,
             shieldSoldierHandler, navigatorHandler, criticalCutterHandler,
             shapeshifterHandler, jugglerHandler, dragonFuryHandler, undeadHandler,
-            swordsmanHandler, stamperHandler, timeEngraverHandler);
+            swordsmanHandler, stamperHandler, timeEngraverHandler, cavalryHandler,
+            vitalityCutterHandler, marathonerHandler);
         
         getLogger().info("Handlers initialized");
     }
@@ -252,6 +264,9 @@ public class VerminPVP extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(undeadHandler, this);
         Bukkit.getPluginManager().registerEvents(stamperHandler, this);
         Bukkit.getPluginManager().registerEvents(timeEngraverHandler, this);
+        Bukkit.getPluginManager().registerEvents(cavalryHandler, this);
+        Bukkit.getPluginManager().registerEvents(vitalityCutterHandler, this);
+        Bukkit.getPluginManager().registerEvents(marathonerHandler, this);
         Bukkit.getPluginManager().registerEvents(worldProtectionHandler, this);
         Bukkit.getPluginManager().registerEvents(teamKillPreventionHandler, this);
         Bukkit.getPluginManager().registerEvents(playerDeathHandler, this);
@@ -403,6 +418,14 @@ public class VerminPVP extends JavaPlugin {
     
     public TimeEngraverHandler getTimeEngraverHandler() {
         return timeEngraverHandler;
+    }
+    
+    public CavalryHandler getCavalryHandler() {
+        return cavalryHandler;
+    }
+    
+    public MarathonerHandler getMarathonerHandler() {
+        return marathonerHandler;
     }
     
     public SkyIslandEffectHandler getSkyIslandEffectHandler() {

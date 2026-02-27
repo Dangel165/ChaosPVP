@@ -64,6 +64,12 @@ public class ItemProvider {
                 return null; // Stamper has no starting sword
             case TIME_ENGRAVER:
                 return null; // Time Engraver has no starting sword
+            case CAVALRY:
+                return createCavalrySpear();
+            case VITALITY_CUTTER:
+                return null; // Vitality Cutter has no starting sword
+            case MARATHONER:
+                return null; // Marathoner has no starting sword
             default:
                 return null;
         }
@@ -96,6 +102,12 @@ public class ItemProvider {
                 return createStamperItem(itemId);
             case TIME_ENGRAVER:
                 return createTimeEngraverItem(itemId);
+            case CAVALRY:
+                return createCavalryItem(itemId);
+            case VITALITY_CUTTER:
+                return null; // Vitality Cutter has no special items
+            case MARATHONER:
+                return createMarathonerItem(itemId);
             default:
                 return null;
         }
@@ -942,6 +954,127 @@ public class ItemProvider {
                 
                 eternal.setItemMeta(eternalMeta);
                 return eternal;
+        }
+        return null;
+    }
+    
+    /**
+     * Create Cavalry spear (stone spear from 1.21.1)
+     */
+    private ItemStack createCavalrySpear() {
+        // Try to use STONE_SPEAR if available, fallback to STONE_SWORD
+        Material spearMaterial;
+        try {
+            spearMaterial = Material.valueOf("STONE_SPEAR");
+        } catch (IllegalArgumentException e) {
+            // STONE_SPEAR doesn't exist, use STONE_SWORD as fallback
+            spearMaterial = Material.STONE_SWORD;
+        }
+        
+        ItemStack spear = new ItemStack(spearMaterial);
+        ItemMeta meta = spear.getItemMeta();
+        
+        meta.setDisplayName("§6기마병의 돌창");
+        List<String> lore = new ArrayList<>();
+        lore.add("§7기마병 시작 무기");
+        meta.setLore(lore);
+        
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        pdc.set(classItemKey, PersistentDataType.STRING, "CAVALRY");
+        pdc.set(itemIdKey, PersistentDataType.STRING, "cavalry_spear");
+        pdc.set(infiniteDurabilityKey, PersistentDataType.BYTE, (byte) 1);
+        
+        meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        
+        spear.setItemMeta(meta);
+        return spear;
+    }
+    
+    /**
+     * Create Cavalry items
+     */
+    private ItemStack createCavalryItem(String itemId) {
+        switch (itemId) {
+            case "mount_dismount":
+                ItemStack mount = new ItemStack(Material.SADDLE);
+                ItemMeta mountMeta = mount.getItemMeta();
+                
+                mountMeta.setDisplayName("§6승마&하마");
+                List<String> mountLore = new ArrayList<>();
+                mountLore.add("§7우클릭: 말 소환 및 탑승");
+                mountLore.add("§7말: 체력 공유");
+                mountLore.add("§7말: 피해의 절반을 탑승자에게 전달");
+                mountLore.add("§7탑승 중 사용: 하마 + 체력 6 회복");
+                mountLore.add("§7쿨타임: 22초");
+                mountMeta.setLore(mountLore);
+                
+                PersistentDataContainer mountPdc = mountMeta.getPersistentDataContainer();
+                mountPdc.set(classItemKey, PersistentDataType.STRING, "CAVALRY");
+                mountPdc.set(itemIdKey, PersistentDataType.STRING, "mount_dismount");
+                
+                mount.setItemMeta(mountMeta);
+                return mount;
+                
+            case "sweep":
+                ItemStack sweep = new ItemStack(Material.IRON_SWORD);
+                ItemMeta sweepMeta = sweep.getItemMeta();
+                
+                sweepMeta.setDisplayName("§c휩쓸기");
+                List<String> sweepLore = new ArrayList<>();
+                sweepLore.add("§7우클릭: 전방 3칸 범위 공격");
+                sweepLore.add("§7피해량: 6 (3칸)");
+                sweepLore.add("§7기마 시: 8 피해 (4칸)");
+                sweepLore.add("§7쿨타임: 6초");
+                sweepLore.add("§a적중 1명당 쿨타임 1초 감소");
+                sweepMeta.setLore(sweepLore);
+                
+                // Set attack damage to 0 to prevent normal attacks
+                sweepMeta.addAttributeModifier(org.bukkit.attribute.Attribute.ATTACK_DAMAGE,
+                    new org.bukkit.attribute.AttributeModifier(
+                        java.util.UUID.randomUUID(),
+                        "generic.attack_damage",
+                        0.0,
+                        org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER,
+                        org.bukkit.inventory.EquipmentSlot.HAND
+                    )
+                );
+                
+                PersistentDataContainer sweepPdc = sweepMeta.getPersistentDataContainer();
+                sweepPdc.set(classItemKey, PersistentDataType.STRING, "CAVALRY");
+                sweepPdc.set(itemIdKey, PersistentDataType.STRING, "sweep");
+                
+                sweepMeta.setUnbreakable(true);
+                sweepMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+                sweepMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                
+                sweep.setItemMeta(sweepMeta);
+                return sweep;
+        }
+        return null;
+    }
+    
+    /**
+     * Create Marathoner items
+     */
+    private ItemStack createMarathonerItem(String itemId) {
+        switch (itemId) {
+            case "crouching_start":
+                ItemStack crouch = new ItemStack(Material.FEATHER);
+                ItemMeta crouchMeta = crouch.getItemMeta();
+                
+                crouchMeta.setDisplayName("§b크라우칭 스타트");
+                List<String> crouchLore = new ArrayList<>();
+                crouchLore.add("§7우클릭: 0.5초간 신속 III");
+                crouchLore.add("§7쿨타임: 5초");
+                crouchMeta.setLore(crouchLore);
+                
+                PersistentDataContainer crouchPdc = crouchMeta.getPersistentDataContainer();
+                crouchPdc.set(classItemKey, PersistentDataType.STRING, "MARATHONER");
+                crouchPdc.set(itemIdKey, PersistentDataType.STRING, "crouching_start");
+                
+                crouch.setItemMeta(crouchMeta);
+                return crouch;
         }
         return null;
     }

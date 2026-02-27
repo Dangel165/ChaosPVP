@@ -37,6 +37,13 @@ public final class AbilityIds {
     public static final String TIME_ENGRAVE = "time_engrave";
     public static final String CLOCK_NEEDLE_STITCH = "clock_needle_stitch";
     
+    // Cavalry abilities
+    public static final String MOUNT_DISMOUNT = "mount_dismount";
+    public static final String SWEEP = "sweep";
+    
+    // Marathoner abilities
+    public static final String CROUCHING_START = "crouching_start";
+    
     private AbilityIds() {
         // Prevent instantiation
     }

@@ -16,7 +16,10 @@ public enum ClassType {
     DRAGON_FURY("Dragon Fury", "용의 분노자"),
     UNDEAD("Undead", "언데드"),
     STAMPER("Stamper", "스탬퍼"),
-    TIME_ENGRAVER("Time Engraver", "시간 각인자");
+    TIME_ENGRAVER("Time Engraver", "시간 각인자"),
+    CAVALRY("Cavalry", "기마병"),
+    VITALITY_CUTTER("Vitality Cutter", "활력 절단자"),
+    MARATHONER("Marathoner", "마라토너");
     
     private final String displayName;
     private final String koreanName;

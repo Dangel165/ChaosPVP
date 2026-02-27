@@ -98,5 +98,10 @@ public class PracticeModeEndCommand implements CommandExecutor {
         if (plugin.getJugglerHandler() != null) {
             plugin.getJugglerHandler().cleanupPlayer(player);
         }
+        
+        // Clean up Cavalry horses for this player
+        if (plugin.getCavalryHandler() != null) {
+            plugin.getCavalryHandler().cleanupPlayer(player);
+        }
     }
 }

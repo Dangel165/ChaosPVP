@@ -36,6 +36,7 @@ public class GameManager {
     private boolean gameActive = false;
     private boolean countdownActive = false;
     private boolean monitoringClassSelection = false;
+    private boolean inFreezePeriod = false; // Track freeze period (first 10 seconds of game)
     private GameMode gameMode = GameMode.SOLO; // Default to solo mode (개인전)
     private int gameTimeRemaining = 0; // in seconds
     private BukkitTask gameTimerTask;
@@ -406,6 +407,9 @@ public class GameManager {
     private void startFreezePeriodWithCountdown() {
         Bukkit.broadcastMessage("§e10초 후 게임이 시작됩니다!");
         
+        // Set freeze period flag
+        inFreezePeriod = true;
+        
         // Apply freeze effects to all players
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getGameMode() == org.bukkit.GameMode.ADVENTURE) {
@@ -448,6 +452,9 @@ public class GameManager {
             return;
         }
         
+        // End freeze period
+        inFreezePeriod = false;
+        
         gameActive = true;
         
         // Set game duration
@@ -472,7 +479,7 @@ public class GameManager {
                 ClassType playerClass = classManager.getPlayerClass(player);
                 
                 // Give stone sword to classes that need it
-                // Exclude: Plague Spreader, Shield Soldier, Critical Cutter, Navigator, Captain, Shapeshifter, Juggler, Dragon Fury, Swordsman
+                // Exclude: Plague Spreader, Shield Soldier, Critical Cutter, Navigator, Captain, Shapeshifter, Juggler, Dragon Fury, Swordsman, Cavalry, Vitality Cutter
                 if (playerClass != ClassType.PLAGUE_SPREADER &&
                     playerClass != ClassType.SHIELD_SOLDIER && 
                     playerClass != ClassType.CRITICAL_CUTTER &&
@@ -481,7 +488,9 @@ public class GameManager {
                     playerClass != ClassType.SHAPESHIFTER &&
                     playerClass != ClassType.JUGGLER &&
                     playerClass != ClassType.DRAGON_FURY &&
-                    playerClass != ClassType.SWORDSMAN) {
+                    playerClass != ClassType.SWORDSMAN &&
+                    playerClass != ClassType.CAVALRY &&
+                    playerClass != ClassType.VITALITY_CUTTER) {
                     // All other classes get stone sword
                     org.bukkit.inventory.ItemStack stoneSword = new org.bukkit.inventory.ItemStack(org.bukkit.Material.STONE_SWORD);
                     org.bukkit.inventory.meta.ItemMeta swordMeta = stoneSword.getItemMeta();
@@ -619,6 +628,7 @@ public class GameManager {
         gameActive = false;
         countdownActive = false;
         monitoringClassSelection = false;
+        inFreezePeriod = false;
         
         // Cancel tasks
         if (gameTimerTask != null) {
@@ -689,6 +699,7 @@ public class GameManager {
         gameActive = false;
         countdownActive = false;
         monitoringClassSelection = false;
+        inFreezePeriod = false;
         
         // Cancel ALL scheduled tasks for this plugin
         Bukkit.getScheduler().cancelTasks(plugin);
@@ -880,6 +891,16 @@ public class GameManager {
         // Clean up Time Engraver frozen entities and effects
         if (pluginInstance.getTimeEngraverHandler() != null) {
             pluginInstance.getTimeEngraverHandler().cleanupAll();
+        }
+        
+        // Clean up Cavalry horses
+        if (pluginInstance.getCavalryHandler() != null) {
+            pluginInstance.getCavalryHandler().cleanupAll();
+        }
+        
+        // Clean up Marathoner sprint tracking and buffs
+        if (pluginInstance.getMarathonerHandler() != null) {
+            pluginInstance.getMarathonerHandler().cleanupAll();
         }
     }
     
@@ -1329,6 +1350,13 @@ public class GameManager {
      */
     public boolean isGameActive() {
         return gameActive;
+    }
+    
+    /**
+     * Check if in freeze period (first 10 seconds of game)
+     */
+    public boolean isInFreezePeriod() {
+        return inFreezePeriod;
     }
     
     /**

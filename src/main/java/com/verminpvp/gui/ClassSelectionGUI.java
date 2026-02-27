@@ -205,6 +205,33 @@ public class ClassSelectionGUI implements Listener {
             "§7영원한 시계: 8초 전체 위치 고정",
             "§7시간 박제 7개로 획득"));
         
+        // Cavalry (slot 28)
+        gui.setItem(28, createClassIconWithAvailability(player, playerTeam, isTeamMode, ClassType.CAVALRY, Material.SADDLE,
+            "§6§l기마병",
+            "§7패시브: 구속 I 상시 효과",
+            "§7시작 무기: 돌창 (돌검)",
+            "§7승마&하마: 말 소환/하마, 22초 쿨타임",
+            "§7하마 시 체력 6 회복",
+            "§7휩쓸기: 전방 3칸 범위 6 피해, 6초 쿨타임",
+            "§7적중 1명당 쿨타임 1초 감소"));
+        
+        // Vitality Cutter (slot 29)
+        gui.setItem(29, createClassIconWithAvailability(player, playerTeam, isTeamMode, ClassType.VITALITY_CUTTER, Material.DIAMOND_SWORD,
+            "§c§l활력 절단자",
+            "§7시작 무기 없음",
+            "§7공격 시: 대상 현재 체력의 1/6 추가 피해",
+            "§7공격 시: 체력 1 (0.5칸) 회복",
+            "§7개인전: 발광 효과"));
+        
+        // Marathoner (slot 30)
+        gui.setItem(30, createClassIconWithAvailability(player, playerTeam, isTeamMode, ClassType.MARATHONER, Material.LEATHER_BOOTS,
+            "§b§l마라토너",
+            "§7달리기 5초: 신속 I",
+            "§7달리기 8.5초: 신속 II",
+            "§7달리기 12초: 신속 III",
+            "§7달리기 15.5초: 신속 IV + 힘 II",
+            "§c달리기 중단/피격/점프 시 효과 소멸"));
+        
         // Status info (slot 35)
         gui.setItem(35, createStatusIcon());
         
@@ -395,6 +422,15 @@ public class ClassSelectionGUI implements Listener {
                 break;
             case 25:
                 selectedClass = ClassType.TIME_ENGRAVER;
+                break;
+            case 28:
+                selectedClass = ClassType.CAVALRY;
+                break;
+            case 29:
+                selectedClass = ClassType.VITALITY_CUTTER;
+                break;
+            case 30:
+                selectedClass = ClassType.MARATHONER;
                 break;
         }
         
