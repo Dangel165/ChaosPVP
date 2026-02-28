@@ -54,6 +54,22 @@ public class DragonFuryHandler implements Listener {
     // Track passive generation tasks
     private final Map<UUID, BukkitTask> passiveGenerationTasks = new HashMap<>();
     
+    // Track counter ability usage for kill detection
+    private final Map<UUID, CounterData> activeCounters = new HashMap<>();
+    
+    // Data class to track counter ability usage
+    private static class CounterData {
+        final UUID attackerId;
+        final int scalesUsed;
+        final long timestamp;
+        
+        CounterData(UUID attackerId, int scalesUsed) {
+            this.attackerId = attackerId;
+            this.scalesUsed = scalesUsed;
+            this.timestamp = System.currentTimeMillis();
+        }
+    }
+    
     private static final int MAX_SCALES = 30;
     private static final String COUNTER_ABILITY_ID = "dragon_fury_counter";
     private static final double COUNTER_COOLDOWN = 30.0; // 30 seconds (changed from 60s)
@@ -291,10 +307,6 @@ public class DragonFuryHandler implements Listener {
             return;
         }
         
-        // Make target final for lambda
-        final LivingEntity finalTarget = target;
-        final int finalScales = scales;
-        
         // Consume all scales
         reverseScales.put(player.getUniqueId(), 0);
         updateScaleDisplay(player);
@@ -302,39 +314,54 @@ public class DragonFuryHandler implements Listener {
         // Deal damage equal to scales (1 scale = 1 damage)
         double damage = scales * 1.0;
         
-        // Check health before damage
-        double healthBefore = finalTarget.getHealth();
+        // Track this counter for kill detection
+        activeCounters.put(target.getUniqueId(), new CounterData(player.getUniqueId(), scales));
         
-        damageHandler.applyInstantDamage(finalTarget, damage);
+        damageHandler.applyInstantDamage(target, damage);
         
         // Visual effect - use SOUL_FIRE_FLAME instead of DRAGON_BREATH
         player.getWorld().spawnParticle(org.bukkit.Particle.SOUL_FIRE_FLAME, 
-            finalTarget.getLocation().add(0, 1, 0), 30, 0.5, 0.5, 0.5, 0.1);
+            target.getLocation().add(0, 1, 0), 30, 0.5, 0.5, 0.5, 0.1);
         player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
         
         player.sendMessage("§a역린의 반격! §e" + scales + "개 소모 → §c" + damage + " 피해");
         
-        // Check if killed after damage is applied
+        // Schedule cleanup of counter tracking after 1 second
+        final LivingEntity finalTarget = target;
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            // Check if target died (health <= 0 or entity is dead/invalid)
-            if (!finalTarget.isValid() || finalTarget.isDead()) {
-                // Heal player (scales / 2 HP)
-                double healAmount = finalScales / 2.0;
-                double currentHealth = player.getHealth();
-                double maxHealth = player.getAttribute(Attribute.MAX_HEALTH).getValue();
-                double newHealth = Math.min(maxHealth, currentHealth + healAmount);
-                player.setHealth(newHealth);
-                player.sendMessage("§a처치 성공! §e+" + healAmount + " 체력 회복");
-            } else if (finalTarget.getHealth() <= 0) {
-                // Also check if health is 0 or below
-                double healAmount = finalScales / 2.0;
-                double currentHealth = player.getHealth();
-                double maxHealth = player.getAttribute(Attribute.MAX_HEALTH).getValue();
-                double newHealth = Math.min(maxHealth, currentHealth + healAmount);
-                player.setHealth(newHealth);
-                player.sendMessage("§a처치 성공! §e+" + healAmount + " 체력 회복");
-            }
-        }, 3L); // Increased delay to 3 ticks
+            activeCounters.remove(finalTarget.getUniqueId());
+        }, 20L);
+    }
+    
+    /**
+     * Handle entity death to detect counter kills
+     */
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        LivingEntity entity = event.getEntity();
+        CounterData counterData = activeCounters.remove(entity.getUniqueId());
+        
+        if (counterData == null) {
+            return;
+        }
+        
+        // Check if counter was used recently (within 1 second)
+        if (System.currentTimeMillis() - counterData.timestamp > 1000) {
+            return;
+        }
+        
+        Player attacker = Bukkit.getPlayer(counterData.attackerId);
+        if (attacker == null || !attacker.isOnline()) {
+            return;
+        }
+        
+        // Heal player (scales / 2 HP)
+        double healAmount = counterData.scalesUsed / 2.0;
+        double currentHealth = attacker.getHealth();
+        double maxHealth = attacker.getAttribute(Attribute.MAX_HEALTH).getValue();
+        double newHealth = Math.min(maxHealth, currentHealth + healAmount);
+        attacker.setHealth(newHealth);
+        attacker.sendMessage("§a처치 성공! §e+" + healAmount + " 체력 회복");
     }
     
     /**
@@ -410,6 +437,7 @@ public class DragonFuryHandler implements Listener {
      */
     public void cleanupAll() {
         reverseScales.clear();
+        activeCounters.clear();
         
         for (BukkitTask task : passiveGenerationTasks.values()) {
             if (task != null) {

@@ -64,7 +64,7 @@ public class StamperHandler implements Listener {
     // Constants
     private static final int STAMP_COOLDOWN = 20; // seconds (nerfed from 12)
     private static final int DIVE_GAIN_INTERVAL = 200; // seconds (nerfed from 120)
-    private static final double STAMP_LAUNCH_HEIGHT = 10.0; // blocks (nerfed from 20.0)
+    private static final double STAMP_LAUNCH_HEIGHT = 8.0; // blocks (nerfed from 10.0)
     private static final double DIVE_LAUNCH_HEIGHT = 40.0; // blocks (nerfed from 80.0)
     private static final double PASSIVE_DAMAGE_RANGE = 4.0; // blocks
     private static final double DIVE_DAMAGE_RANGE = 20.0; // blocks

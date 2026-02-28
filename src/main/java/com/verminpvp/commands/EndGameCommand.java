@@ -1,5 +1,6 @@
 package com.verminpvp.commands;
 
+import com.verminpvp.managers.ClassBanManager;
 import com.verminpvp.managers.ClassManager;
 import com.verminpvp.managers.GameManager;
 import com.verminpvp.managers.TeamManager;
@@ -18,17 +19,25 @@ public class EndGameCommand implements CommandExecutor {
     private final ClassManager classManager;
     private final GameManager gameManager;
     private final TeamManager teamManager;
+    private final ClassBanManager classBanManager;
     
-    public EndGameCommand(ClassManager classManager, GameManager gameManager, TeamManager teamManager) {
+    public EndGameCommand(ClassManager classManager, GameManager gameManager, 
+                         TeamManager teamManager, ClassBanManager classBanManager) {
         this.classManager = classManager;
         this.gameManager = gameManager;
         this.teamManager = teamManager;
+        this.classBanManager = classBanManager;
     }
     
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Forcefully end the game
         gameManager.forceEndGame();
+        
+        // Clear banned class
+        if (classBanManager != null) {
+            classBanManager.clearBannedClass();
+        }
         
         // Broadcast forced end message
         Bukkit.broadcastMessage("§c§l게임이 강제로 종료되었습니다!");

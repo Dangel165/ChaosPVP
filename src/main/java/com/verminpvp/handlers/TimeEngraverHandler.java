@@ -75,8 +75,8 @@ public class TimeEngraverHandler implements Listener {
     private static final int CLOCK_NEEDLE_COOLDOWN = 12; // seconds
     private static final int CLOCK_NEEDLE_COOLDOWN_DURING_ETERNAL = 1; // seconds during eternal clock
     private static final double TIME_ENGRAVE_RANGE = 8.0; // blocks (buffed from 5.0)
-    private static final double NEEDLE_DAMAGE = 6.0; // nerfed from 10.0
-    private static final double NEEDLE_BONUS_DAMAGE = 8.0; // buffed from 6.0
+    private static final double NEEDLE_DAMAGE = 3.0; // nerfed from 6.0
+    private static final double NEEDLE_BONUS_DAMAGE = 4.0; // nerfed from 8.0
     private static final int TIME_PRESERVES_FOR_ETERNAL = 7;
     private static final int ETERNAL_CLOCK_DURATION = 8; // seconds
     
@@ -419,14 +419,14 @@ public class TimeEngraverHandler implements Listener {
         
         // Check if target has slowness effect (구속 효과)
         if (target.hasPotionEffect(PotionEffectType.SLOWNESS)) {
-            // Apply base damage of 6 (3 hearts)
-            damageHandler.applyInstantDamage(target, 6.0);
-            // Apply bonus damage of 8 (4 hearts) if target has slowness
-            damageHandler.applyInstantDamage(target, 8.0);
-            shooter.sendMessage("§e시곗바늘 적중! §6+구속 보너스 피해 (총 14 피해)");
+            // Apply base damage of 3 (1.5 hearts)
+            damageHandler.applyInstantDamage(target, 3.0);
+            // Apply bonus damage of 4 (2 hearts) if target has slowness
+            damageHandler.applyInstantDamage(target, 4.0);
+            shooter.sendMessage("§e시곗바늘 적중! §6+구속 보너스 피해 (총 7 피해)");
         } else {
-            // Apply base damage of 6 (3 hearts)
-            damageHandler.applyInstantDamage(target, 6.0);
+            // Apply base damage of 3 (1.5 hearts)
+            damageHandler.applyInstantDamage(target, 3.0);
             shooter.sendMessage("§e시곗바늘 적중!");
         }
         

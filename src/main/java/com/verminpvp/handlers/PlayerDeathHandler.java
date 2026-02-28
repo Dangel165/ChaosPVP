@@ -31,13 +31,19 @@ public class PlayerDeathHandler implements Listener {
             return;
         }
         
+        // Clean up cavalry horse immediately on death (before any other checks)
+        com.verminpvp.VerminPVP plugin = (com.verminpvp.VerminPVP) gameManager.getPlugin();
+        if (plugin.getCavalryHandler() != null) {
+            plugin.getCavalryHandler().cleanupPlayer(player);
+        }
+        
         // Check if player is Undead and this is their first death (they will revive)
         // Don't set to spectator or check win condition because they will revive
-        com.verminpvp.managers.ClassManager classManager = ((com.verminpvp.VerminPVP) gameManager.getPlugin()).getClassManager();
+        com.verminpvp.managers.ClassManager classManager = plugin.getClassManager();
         com.verminpvp.models.ClassData classData = classManager.getClassData(player);
         if (classData != null && classData.getClassType() == com.verminpvp.models.ClassType.UNDEAD) {
             // Check if this is their first death (they haven't revived yet)
-            com.verminpvp.handlers.UndeadHandler undeadHandler = ((com.verminpvp.VerminPVP) gameManager.getPlugin()).getUndeadHandler();
+            com.verminpvp.handlers.UndeadHandler undeadHandler = plugin.getUndeadHandler();
             if (undeadHandler != null && !undeadHandler.hasPlayerRevived(player)) {
                 // This is their first death, they will revive
                 // Don't set to spectator, don't check win condition
@@ -57,7 +63,7 @@ public class PlayerDeathHandler implements Listener {
                 player.spigot().respawn();
                 
                 // Teleport to practice map
-                org.bukkit.Location practiceMap = ((com.verminpvp.VerminPVP) gameManager.getPlugin()).getGameManager().getMapManager().getPracticeMap();
+                org.bukkit.Location practiceMap = plugin.getGameManager().getMapManager().getPracticeMap();
                 if (practiceMap != null) {
                     player.teleport(practiceMap);
                 }
@@ -168,6 +174,11 @@ public class PlayerDeathHandler implements Listener {
         // Clean up Juggler throw time gain tasks for this player
         if (plugin.getJugglerHandler() != null) {
             plugin.getJugglerHandler().cleanupPlayer(player);
+        }
+        
+        // Clean up Cavalry horse for this player
+        if (plugin.getCavalryHandler() != null) {
+            plugin.getCavalryHandler().cleanupPlayer(player);
         }
     }
 }

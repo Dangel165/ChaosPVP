@@ -8,6 +8,7 @@ import com.verminpvp.managers.TeamManager;
 import com.verminpvp.models.ClassData;
 import com.verminpvp.models.ClassType;
 import com.verminpvp.models.Team;
+import org.bukkit.Location;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -20,6 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -77,6 +79,9 @@ public class JugglerHandler implements Listener {
     // Track throw time gain tasks
     private final Map<UUID, BukkitTask> throwTimeGainTasks = new HashMap<>();
     
+    // Track entities frozen by Throw Time (position lock)
+    private final Map<UUID, Location> frozenEntities = new HashMap<>();
+    
     public JugglerHandler(Plugin plugin, ClassManager classManager, CooldownManager cooldownManager,
                          ItemProvider itemProvider, DamageHandler damageHandler, TeamManager teamManager,
                          GameManager gameManager) {
@@ -87,6 +92,31 @@ public class JugglerHandler implements Listener {
         this.damageHandler = damageHandler;
         this.teamManager = teamManager;
         this.gameManager = gameManager;
+    }
+    
+    /**
+     * Enforce position lock for frozen entities (players)
+     */
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        
+        // Only enforce freeze if game is active
+        if (!gameManager.isGameActive() && !gameManager.isInPracticeMode(player)) {
+            return;
+        }
+        
+        Location frozenLoc = frozenEntities.get(player.getUniqueId());
+        if (frozenLoc != null) {
+            // Check if player moved from frozen position
+            Location from = event.getFrom();
+            Location to = event.getTo();
+            
+            if (to != null && (from.getX() != to.getX() || from.getY() != to.getY() || from.getZ() != to.getZ())) {
+                // Teleport player back to frozen position
+                event.setTo(frozenLoc);
+            }
+        }
     }
     
     /**
@@ -259,8 +289,11 @@ public class JugglerHandler implements Listener {
      * Handle Throw Time ability
      */
     private void handleThrowTime(Player player, ItemStack item) {
-        // Apply Slowness V to all entities within 10 blocks
+        // Apply Slowness V to all entities within 10 blocks and freeze their position
         int affectedCount = 0;
+        java.util.List<UUID> frozenEntities = new java.util.ArrayList<>();
+        java.util.Map<UUID, Location> frozenLocations = new java.util.HashMap<>();
+        
         for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
             if (entity instanceof LivingEntity && entity != player) {
                 LivingEntity target = (LivingEntity) entity;
@@ -281,8 +314,48 @@ public class JugglerHandler implements Listener {
                 
                 // Apply Slowness V for 2.5 seconds (50 ticks)
                 target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 50, 4, false, true, true));
+                
+                // Freeze position (like Time Engraver)
+                Location frozenLoc = target.getLocation().clone();
+                frozenEntities.add(target.getUniqueId());
+                frozenLocations.put(target.getUniqueId(), frozenLoc);
+                
                 affectedCount++;
             }
+        }
+        
+        // Schedule position enforcement task for 2.5 seconds (50 ticks)
+        if (!frozenEntities.isEmpty()) {
+            org.bukkit.scheduler.BukkitTask freezeTask = new org.bukkit.scheduler.BukkitRunnable() {
+                int ticksRemaining = 50; // 2.5 seconds
+                
+                @Override
+                public void run() {
+                    if (ticksRemaining <= 0) {
+                        cancel();
+                        return;
+                    }
+                    
+                    // Enforce frozen positions for all affected entities
+                    for (UUID entityId : frozenEntities) {
+                        Entity entity = org.bukkit.Bukkit.getEntity(entityId);
+                        if (entity instanceof LivingEntity && entity.isValid()) {
+                            Location frozenLoc = frozenLocations.get(entityId);
+                            if (frozenLoc != null) {
+                                // Teleport entity back to frozen position if they moved
+                                Location currentLoc = entity.getLocation();
+                                if (currentLoc.getX() != frozenLoc.getX() || 
+                                    currentLoc.getY() != frozenLoc.getY() || 
+                                    currentLoc.getZ() != frozenLoc.getZ()) {
+                                    entity.teleport(frozenLoc);
+                                }
+                            }
+                        }
+                    }
+                    
+                    ticksRemaining--;
+                }
+            }.runTaskTimer(plugin, 0L, 1L); // Run every tick
         }
         
         // Reset Light Thing cooldown
@@ -388,6 +461,9 @@ public class JugglerHandler implements Listener {
         // Clear projectile tracking
         snowballOwners.clear();
         windChargeOwners.clear();
+        
+        // Clear frozen entities
+        frozenEntities.clear();
     }
     
     /**
@@ -406,6 +482,9 @@ public class JugglerHandler implements Listener {
         // Clear projectile tracking for this player
         snowballOwners.values().removeIf(uuid -> uuid.equals(playerId));
         windChargeOwners.values().removeIf(uuid -> uuid.equals(playerId));
+        
+        // Clear frozen state for this player
+        frozenEntities.remove(playerId);
     }
 }
 

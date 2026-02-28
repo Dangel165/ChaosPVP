@@ -3,14 +3,19 @@ package com.verminpvp.handlers;
 import com.verminpvp.VerminPVP;
 import com.verminpvp.managers.ClassManager;
 import com.verminpvp.managers.GameManager;
+import com.verminpvp.managers.ItemProvider;
 import com.verminpvp.managers.TeamManager;
 import com.verminpvp.models.ClassType;
 import com.verminpvp.models.GameMode;
 import com.verminpvp.models.Team;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Handler for Vitality Cutter class abilities
@@ -19,8 +24,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
  * - Does not start with stone sword
  * - Left-click attack: deals additional instant damage equal to 1/6 of target's current health
  * - Left-click attack: heals 1 HP (0.5 hearts)
+ * - Left-click attack: cannot kill (minimum 0.5 HP)
  * - Player name tag shows class name
  * - Glowing effect in FFA mode
+ * 
+ * Life Cut (생명 절단):
+ * - Right-click: Deal 2 instant damage (1 heart) to target within 1 block
+ * - Consumes item after use
  */
 public class VitalityCutterHandler implements Listener {
     
@@ -29,15 +39,17 @@ public class VitalityCutterHandler implements Listener {
     private final DamageHandler damageHandler;
     private final GameManager gameManager;
     private final TeamManager teamManager;
+    private final ItemProvider itemProvider;
     
     public VitalityCutterHandler(VerminPVP plugin, ClassManager classManager, 
                                   DamageHandler damageHandler, GameManager gameManager,
-                                  TeamManager teamManager) {
+                                  TeamManager teamManager, ItemProvider itemProvider) {
         this.plugin = plugin;
         this.classManager = classManager;
         this.damageHandler = damageHandler;
         this.gameManager = gameManager;
         this.teamManager = teamManager;
+        this.itemProvider = itemProvider;
     }
     
     /**
@@ -68,21 +80,88 @@ public class VitalityCutterHandler implements Listener {
             }
         }
         
+        // Modify base damage to 0 (prevent killing with left-click)
+        event.setDamage(0.0);
+        
         // Calculate 1/6 of target's current health
         double currentHealth = target.getHealth();
         double bonusDamage = currentHealth / 6.0;
         
-        // Apply instant damage (1/6 of current health)
-        damageHandler.applyInstantDamage(target, bonusDamage);
+        // Apply instant damage (1/6 of current health) but ensure target stays above 0.5 HP
+        double newHealth = Math.max(0.5, currentHealth - bonusDamage);
+        target.setHealth(newHealth);
         
         // Heal attacker 1 HP (0.5 hearts)
-        double newHealth = Math.min(attacker.getMaxHealth(), attacker.getHealth() + 1.0);
-        attacker.setHealth(newHealth);
+        double attackerNewHealth = Math.min(attacker.getMaxHealth(), attacker.getHealth() + 1.0);
+        attacker.setHealth(attackerNewHealth);
         
         // Visual feedback
-        double totalDamage = event.getDamage() + bonusDamage;
-        attacker.sendMessage("§c활력 절단! §e" + String.format("%.1f", totalDamage) + " 데미지");
+        attacker.sendMessage("§c활력 절단! §e" + String.format("%.1f", bonusDamage) + " 데미지");
         target.getWorld().spawnParticle(org.bukkit.Particle.DAMAGE_INDICATOR, 
             target.getLocation().add(0, 1, 0), 10, 0.3, 0.3, 0.3, 0.1);
+    }
+    
+    /**
+     * Handle Life Cut ability (right-click)
+     */
+    @EventHandler
+    public void onRightClick(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        if (classManager.getPlayerClass(player) != ClassType.VITALITY_CUTTER) return;
+        
+        ItemStack item = event.getItem();
+        if (item == null) return;
+        
+        String itemId = itemProvider.getItemId(item);
+        if (itemId == null || !itemId.equals("life_cut")) return;
+        
+        event.setCancelled(true);
+        
+        // Find nearest entity within 1 block
+        LivingEntity target = null;
+        double minDistance = 1.0;
+        
+        for (Entity entity : player.getNearbyEntities(1.0, 1.0, 1.0)) {
+            if (!(entity instanceof LivingEntity) || entity == player) continue;
+            
+            LivingEntity livingEntity = (LivingEntity) entity;
+            
+            // Check if target is a teammate in team mode (not practice mode)
+            if (livingEntity instanceof Player) {
+                Player targetPlayer = (Player) livingEntity;
+                
+                if (gameManager.getGameMode() == GameMode.TEAM && !gameManager.isInPracticeMode(player)) {
+                    Team playerTeam = teamManager.getPlayerTeam(player);
+                    Team targetTeam = teamManager.getPlayerTeam(targetPlayer);
+                    
+                    if (playerTeam != null && playerTeam == targetTeam) {
+                        continue; // Skip teammates
+                    }
+                }
+            }
+            
+            double distance = player.getLocation().distance(livingEntity.getLocation());
+            if (distance < minDistance) {
+                minDistance = distance;
+                target = livingEntity;
+            }
+        }
+        
+        if (target == null) {
+            player.sendMessage("§c범위 내에 적이 없습니다!");
+            return;
+        }
+        
+        // Deal 2 instant damage (1 heart)
+        damageHandler.applyInstantDamage(target, 2.0);
+        
+        // Visual effect
+        target.getWorld().spawnParticle(org.bukkit.Particle.DAMAGE_INDICATOR, 
+            target.getLocation().add(0, 1, 0), 15, 0.3, 0.3, 0.3, 0.1);
+        
+        player.sendMessage("§4생명 절단! §c2 즉시 피해");
+        
+        // Remove item after use
+        item.setAmount(item.getAmount() - 1);
     }
 }

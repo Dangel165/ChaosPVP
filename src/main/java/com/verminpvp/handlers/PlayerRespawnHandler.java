@@ -31,14 +31,23 @@ public class PlayerRespawnHandler implements Listener {
             return;
         }
         
-        // Get the world where player died
-        org.bukkit.World deathWorld = player.getWorld();
+        // Get the current map's spawn location from MapManager
+        com.verminpvp.VerminPVP plugin = (com.verminpvp.VerminPVP) gameManager.getPlugin();
+        com.verminpvp.managers.MapManager mapManager = plugin.getMapManager();
         
-        // Set respawn location to the world spawn of the death world
-        // This ensures players respawn in the same world they died in
-        if (deathWorld != null) {
-            org.bukkit.Location respawnLocation = deathWorld.getSpawnLocation();
-            event.setRespawnLocation(respawnLocation);
+        // Get voted map location
+        org.bukkit.Location mapSpawn = mapManager.getVotedMap();
+        
+        // Set respawn location to current map's spawn
+        if (mapSpawn != null) {
+            event.setRespawnLocation(mapSpawn);
+        } else {
+            // Fallback to world spawn if map spawn not set
+            org.bukkit.World deathWorld = player.getWorld();
+            if (deathWorld != null) {
+                org.bukkit.Location respawnLocation = deathWorld.getSpawnLocation();
+                event.setRespawnLocation(respawnLocation);
+            }
         }
         
         // Set player to spectator mode after respawn

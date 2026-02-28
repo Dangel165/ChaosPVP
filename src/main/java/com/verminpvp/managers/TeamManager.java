@@ -66,28 +66,23 @@ public class TeamManager {
      * Set a player's team
      */
     public void setPlayerTeam(Player player, Team team) {
+        // Store team assignment FIRST before any scoreboard operations
         playerTeams.put(player.getUniqueId(), team);
         
-        // Add player to scoreboard team for display
+        // Remove from both scoreboard teams first to prevent conflicts
+        if (blueTeam != null) blueTeam.removeEntry(player.getName());
+        if (redTeam != null) redTeam.removeEntry(player.getName());
+        
+        // Add player to correct scoreboard team for display
         if (team == Team.BLUE) {
-            // Remove from red team first
-            if (redTeam != null) redTeam.removeEntry(player.getName());
-            // Add to blue team
             if (blueTeam != null) {
                 blueTeam.addEntry(player.getName());
-                // Debug message - show actual team assignment
-                player.sendMessage("§7[디버그] Team.BLUE → blue_team 스코어보드 (색상: BLUE)");
-                player.sendMessage("§7[디버그] 내부 팀: " + team.name() + ", 스코어보드 팀: " + blueTeam.getName());
+                player.sendMessage("§9블루 팀에 배정되었습니다!");
             }
         } else if (team == Team.RED) {
-            // Remove from blue team first
-            if (blueTeam != null) blueTeam.removeEntry(player.getName());
-            // Add to red team
             if (redTeam != null) {
                 redTeam.addEntry(player.getName());
-                // Debug message - show actual team assignment
-                player.sendMessage("§7[디버그] Team.RED → red_team 스코어보드 (색상: RED)");
-                player.sendMessage("§7[디버그] 내부 팀: " + team.name() + ", 스코어보드 팀: " + redTeam.getName());
+                player.sendMessage("§c레드 팀에 배정되었습니다!");
             }
         }
     }

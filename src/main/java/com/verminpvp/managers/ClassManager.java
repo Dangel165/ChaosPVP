@@ -269,6 +269,7 @@ public class ClassManager {
                 
             case CRITICAL_CUTTER:
                 player.getInventory().addItem(itemProvider.createSpecialItem(ClassType.CRITICAL_CUTTER, "guaranteed_critical"));
+                player.getInventory().addItem(itemProvider.createSpecialItem(ClassType.CRITICAL_CUTTER, "life_cut"));
                 break;
                 
             case NAVIGATOR:

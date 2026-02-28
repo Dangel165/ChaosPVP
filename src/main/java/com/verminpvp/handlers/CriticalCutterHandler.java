@@ -88,7 +88,7 @@ public class CriticalCutterHandler implements Listener {
     }
     
     /**
-     * Handle 확정 크리티컬 right-click
+     * Handle 확정 크리티컬 and 생명 절단 right-click
      */
     @EventHandler
     public void onRightClick(PlayerInteractEvent event) {
@@ -115,6 +115,55 @@ public class CriticalCutterHandler implements Listener {
             
             // Set cooldown (25 seconds)
             cooldownManager.setCooldown(player.getUniqueId(), "guaranteed_critical", 25.0);
+        } else if (itemId.equals("life_cut")) {
+            event.setCancelled(true);
+            handleLifeCut(player);
+        }
+    }
+    
+    /**
+     * Handle 생명 절단 ability (Life Cut)
+     * Right-click to deal 2 instant damage to target within 1 block, then disappear
+     */
+    private void handleLifeCut(Player player) {
+        // Get target in front of player (within 1 block)
+        org.bukkit.entity.LivingEntity target = getTargetInFront(player, 1.0);
+        
+        if (target == null) {
+            player.sendMessage("§c대상을 찾을 수 없습니다!");
+            return;
+        }
+        
+        // Check if target is a teammate in team mode (not practice mode)
+        if (target instanceof Player) {
+            Player targetPlayer = (Player) target;
+            GameManager gameManager = plugin.getGameManager();
+            TeamManager teamManager = plugin.getTeamManager();
+            
+            if (gameManager.getGameMode() == GameMode.TEAM && !gameManager.isInPracticeMode(player)) {
+                Team attackerTeam = teamManager.getPlayerTeam(player);
+                Team targetTeam = teamManager.getPlayerTeam(targetPlayer);
+                
+                if (attackerTeam != null && attackerTeam == targetTeam) {
+                    player.sendMessage("§c아군을 공격할 수 없습니다!");
+                    return;
+                }
+            }
+        }
+        
+        // Deal 2 instant damage
+        damageHandler.applyInstantDamage(target, 2.0);
+        
+        // Visual and audio feedback
+        player.sendMessage("§c생명 절단! §e2.0 즉시 피해");
+        target.getWorld().spawnParticle(org.bukkit.Particle.DAMAGE_INDICATOR, target.getLocation().add(0, 1, 0), 10, 0.3, 0.3, 0.3, 0.1);
+        player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_ATTACK_STRONG, 1.0f, 1.5f);
+        
+        // Remove the life_cut item from inventory (disappear after use)
+        ItemStack itemInHand = player.getInventory().getItemInMainHand();
+        if (itemInHand != null && itemProvider.getItemId(itemInHand) != null && 
+            itemProvider.getItemId(itemInHand).equals("life_cut")) {
+            itemInHand.setAmount(0);
         }
     }
     
@@ -217,14 +266,12 @@ public class CriticalCutterHandler implements Listener {
         // Roll for critical hit
         double roll = random.nextDouble() * 100.0;
         
-        // Adjust damage to 5.0 (stone sword level) since iron sword base is 6.0
-        // Save the adjusted damage BEFORE modifying the event
-        double adjustedDamage = 5.0;
-        event.setDamage(adjustedDamage);
+        // Set damage to 0 to prevent killing with left-click
+        event.setDamage(0.0);
         
         if (roll < critChance) {
-            // Critical hit! Pass the adjusted damage (5.0)
-            handleCriticalHit(event, attacker, data, adjustedDamage);
+            // Critical hit! Apply passive damage (1/4 of current health)
+            handleCriticalHit(event, attacker, data);
         } else {
             // Non-crit: increase crit chance by 1%
             double newCritChance = Math.min(100.0, critChance + 1.0);
@@ -235,11 +282,13 @@ public class CriticalCutterHandler implements Listener {
     /**
      * Handle critical hit effects for 크리티컬 커터 sword
      */
-    private void handleCriticalHit(EntityDamageByEntityEvent event, Player attacker, ClassData data, double baseDamage) {
+    private void handleCriticalHit(EntityDamageByEntityEvent event, Player attacker, ClassData data) {
         org.bukkit.entity.LivingEntity target = (org.bukkit.entity.LivingEntity) event.getEntity();
         
-        // Deal additional instant damage equal to base damage (5.0)
-        damageHandler.applyInstantDamage(target, baseDamage);
+        // Deal instant damage equal to 1/4 of target's current health
+        double currentHealth = target.getHealth();
+        double passiveDamage = currentHealth / 4.0;
+        damageHandler.applyInstantDamage(target, passiveDamage);
         
         // Heal attacker 2 HP (1 heart)
         double newHealth = Math.min(attacker.getMaxHealth(), attacker.getHealth() + 2.0);
@@ -249,8 +298,7 @@ public class CriticalCutterHandler implements Listener {
         // Crit chance only increases on non-crit attacks
         
         // Visual feedback
-        double totalDamage = baseDamage * 2.0; // Base + instant
-        attacker.sendMessage("§c§l크리티컬 적중! §e" + String.format("%.1f", totalDamage) + " 데미지");
+        attacker.sendMessage("§c§l크리티컬 적중! §e" + String.format("%.1f", passiveDamage) + " 데미지 (현재 체력의 1/4)");
         target.getWorld().spawnParticle(org.bukkit.Particle.CRIT, target.getLocation().add(0, 1, 0), 20, 0.5, 0.5, 0.5, 0.1);
         attacker.playSound(attacker.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.2f);
     }

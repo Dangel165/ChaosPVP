@@ -43,6 +43,7 @@ public class GameManager {
     private BukkitTask effectTask;
     private BukkitTask classSelectionMonitorTask;
     private org.bukkit.boss.BossBar timeBossBar; // Boss bar for time display
+    private ClassType bannedClass = null; // Track banned class from voting
     
     // Track original player states
     private final Map<UUID, Boolean> originalOpStatus = new HashMap<>();
@@ -613,6 +614,27 @@ public class GameManager {
      */
     public GameMode getGameMode() {
         return gameMode;
+    }
+    
+    /**
+     * Set the banned class (from voting)
+     */
+    public void setBannedClass(ClassType classType) {
+        this.bannedClass = classType;
+    }
+    
+    /**
+     * Get the banned class
+     */
+    public ClassType getBannedClass() {
+        return bannedClass;
+    }
+    
+    /**
+     * Clear the banned class (for next game)
+     */
+    public void clearBannedClass() {
+        this.bannedClass = null;
     }
     
     /**

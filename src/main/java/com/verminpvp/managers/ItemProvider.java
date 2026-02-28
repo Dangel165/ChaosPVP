@@ -105,7 +105,7 @@ public class ItemProvider {
             case CAVALRY:
                 return createCavalryItem(itemId);
             case VITALITY_CUTTER:
-                return null; // Vitality Cutter has no special items
+                return createVitalityCutterItem(itemId);
             case MARATHONER:
                 return createMarathonerItem(itemId);
             default:
@@ -558,6 +558,27 @@ public class ItemProvider {
             
             meta.setUnbreakable(true);
             meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            
+            item.setItemMeta(meta);
+            return item;
+        } else if (itemId.equals("life_cut")) {
+            ItemStack item = new ItemStack(Material.IRON_SWORD);
+            ItemMeta meta = item.getItemMeta();
+            
+            meta.setDisplayName("§4§l생명 절단");
+            List<String> lore = new ArrayList<>();
+            lore.add("§7우클릭: 대상에게 2 즉시 피해 (1칸)");
+            lore.add("§7사용 후 사라짐");
+            meta.setLore(lore);
+            
+            PersistentDataContainer pdc = meta.getPersistentDataContainer();
+            pdc.set(classItemKey, PersistentDataType.STRING, "CRITICAL_CUTTER");
+            pdc.set(itemIdKey, PersistentDataType.STRING, "life_cut");
+            pdc.set(infiniteDurabilityKey, PersistentDataType.BYTE, (byte) 1);
+            
+            meta.setUnbreakable(true);
+            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             
             item.setItemMeta(meta);
             return item;
@@ -1075,6 +1096,35 @@ public class ItemProvider {
                 
                 crouch.setItemMeta(crouchMeta);
                 return crouch;
+        }
+        return null;
+    }
+    
+    /**
+     * Create Vitality Cutter items
+     */
+    private ItemStack createVitalityCutterItem(String itemId) {
+        if (itemId.equals("life_cut")) {
+            ItemStack item = new ItemStack(Material.IRON_SWORD);
+            ItemMeta meta = item.getItemMeta();
+            
+            meta.setDisplayName("§4§l생명 절단");
+            List<String> lore = new ArrayList<>();
+            lore.add("§7우클릭: 대상에게 2 즉시 피해 (1칸)");
+            lore.add("§7범위: 1칸");
+            lore.add("§c사용 후 사라짐");
+            meta.setLore(lore);
+            
+            PersistentDataContainer pdc = meta.getPersistentDataContainer();
+            pdc.set(classItemKey, PersistentDataType.STRING, "VITALITY_CUTTER");
+            pdc.set(itemIdKey, PersistentDataType.STRING, "life_cut");
+            
+            meta.setUnbreakable(true);
+            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            
+            item.setItemMeta(meta);
+            return item;
         }
         return null;
     }

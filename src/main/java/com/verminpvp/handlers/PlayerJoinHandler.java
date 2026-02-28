@@ -9,6 +9,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 /**
  * Handles player join events to restore state during active games
+ * - Players joining during a game are forced into spectator mode
+ * - All players receive infinite night vision effect
  */
 public class PlayerJoinHandler implements Listener {
     
@@ -24,7 +26,7 @@ public class PlayerJoinHandler implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         
-        // Always give night vision on join (infinite, no particles)
+        // Always give infinite night vision on join (no particles, no icon)
         player.addPotionEffect(new org.bukkit.potion.PotionEffect(
             org.bukkit.potion.PotionEffectType.NIGHT_VISION, 
             Integer.MAX_VALUE, 0, false, false, false));
@@ -52,7 +54,7 @@ public class PlayerJoinHandler implements Listener {
             return;
         }
         
-        // Check if player had a class before disconnecting
+        // Game is active - check if player had a class before disconnecting
         if (classManager.getPlayerClass(player) != null) {
             // Player was in the game, restore their state
             
@@ -68,14 +70,21 @@ public class PlayerJoinHandler implements Listener {
             player.setMaxHealth(40.0);
             player.setHealth(40.0);
             
-            // Apply game effects
+            // Apply game effects (including night vision refresh)
             gameManager.applyGameEffects(player);
             
             player.sendMessage("§a게임이 진행 중입니다. 게임 상태가 복구되었습니다.");
         } else {
-            // Player was not in the game, set to spectator
+            // Player was not in the game - force spectator mode
             player.setGameMode(org.bukkit.GameMode.SPECTATOR);
+            
+            // Remove OP during game
+            if (player.isOp()) {
+                player.setOp(false);
+            }
+            
             player.sendMessage("§7게임이 진행 중입니다. 관전 모드로 전환되었습니다.");
+            player.sendMessage("§7게임이 끝날 때까지 관전만 가능합니다.");
         }
     }
 }

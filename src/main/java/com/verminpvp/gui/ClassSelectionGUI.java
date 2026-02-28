@@ -1,6 +1,7 @@
 package com.verminpvp.gui;
 
 import com.verminpvp.VerminPVP;
+import com.verminpvp.managers.ClassBanManager;
 import com.verminpvp.managers.ClassManager;
 import com.verminpvp.managers.ExcludeManager;
 import com.verminpvp.managers.GameManager;
@@ -36,6 +37,7 @@ public class ClassSelectionGUI implements Listener {
     private GameManager gameManager;
     private com.verminpvp.managers.TeamManager teamManager;
     private com.verminpvp.managers.DraftPickManager draftPickManager;
+    private ClassBanManager classBanManager;
     private static final String GUI_TITLE = "§6§l클래스 선택";
     
     // Track players who have the GUI open
@@ -72,6 +74,13 @@ public class ClassSelectionGUI implements Listener {
      */
     public void setDraftPickManager(com.verminpvp.managers.DraftPickManager draftPickManager) {
         this.draftPickManager = draftPickManager;
+    }
+    
+    /**
+     * Set the ClassBanManager (called after initialization)
+     */
+    public void setClassBanManager(ClassBanManager classBanManager) {
+        this.classBanManager = classBanManager;
     }
     
     /**
@@ -297,10 +306,31 @@ public class ClassSelectionGUI implements Listener {
     /**
      * Create a class icon with availability check (for team mode)
      * If class is taken by teammate, show as gray glass pane with "이미 선택됨" message
+     * If class is banned, show as red glass pane with "밴됨" message
      */
     private ItemStack createClassIconWithAvailability(Player player, com.verminpvp.models.Team playerTeam, 
                                                       boolean isTeamMode, ClassType classType, Material material, 
                                                       String name, String... lore) {
+        // Check if class is banned
+        boolean isBanned = classBanManager != null && classBanManager.isClassBanned(classType);
+        
+        if (isBanned) {
+            // Create banned icon (red glass pane)
+            ItemStack item = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName("§c§l§m" + name.replaceAll("§.", "")); // Remove color codes and add strikethrough
+            
+            List<String> newLore = new ArrayList<>();
+            newLore.add("§c§l밴됨!");
+            newLore.add("§7이 클래스는 투표로 밴되었습니다.");
+            newLore.add("");
+            newLore.add("§8" + String.join(" ", lore).replaceAll("§7", "§8")); // Make description darker
+            
+            meta.setLore(newLore);
+            item.setItemMeta(meta);
+            return item;
+        }
+        
         // Check if class is taken by teammate
         boolean isTaken = false;
         Player takenBy = null;
@@ -364,6 +394,18 @@ public class ClassSelectionGUI implements Listener {
         // Block clicks on disabled classes (gray glass pane)
         if (clicked.getType() == Material.GRAY_STAINED_GLASS_PANE) {
             player.sendMessage("§c이 클래스는 이미 같은 팀의 다른 플레이어가 선택했습니다!");
+            return;
+        }
+        
+        // Block clicks on banned classes (red glass pane)
+        if (clicked.getType() == Material.RED_STAINED_GLASS_PANE) {
+            player.sendMessage("§c이 클래스는 투표로 밴되었습니다!");
+            return;
+        }
+        
+        // Block clicks on banned classes (barrier)
+        if (clicked.getType() == Material.BARRIER) {
+            player.sendMessage("§c이 클래스는 밴되어 선택할 수 없습니다!");
             return;
         }
         
@@ -435,6 +477,13 @@ public class ClassSelectionGUI implements Listener {
         }
         
         if (selectedClass != null) {
+            // Check if class is banned
+            if (classBanManager != null && classBanManager.isClassBanned(selectedClass)) {
+                player.sendMessage("§c이 클래스는 밴되어 선택할 수 없습니다!");
+                player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
+                return;
+            }
+            
             // Check if class is already taken by teammate
             // In TEAM mode: check per-team (Blue team can have 1 Scientist, Red team can have 1 Scientist)
             // In SOLO mode: no duplicate checking (multiple players can pick same class)
@@ -621,6 +670,7 @@ public class ClassSelectionGUI implements Listener {
      * Get a random available class that hasn't been taken
      * In TEAM mode: only select from classes not taken by player's team
      * In SOLO mode: all classes are available
+     * Excludes banned classes
      */
     private ClassType getRandomAvailableClass(Player player) {
         ClassType[] allClasses = ClassType.values();
@@ -632,17 +682,30 @@ public class ClassSelectionGUI implements Listener {
             com.verminpvp.models.Team playerTeam = teamManager.getPlayerTeam(player);
             if (playerTeam != null) {
                 for (ClassType classType : allClasses) {
+                    // Skip banned class
+                    if (classBanManager != null && classBanManager.isClassBanned(classType)) {
+                        continue;
+                    }
+                    
                     if (!classManager.isClassTakenByTeam(classType, playerTeam)) {
                         availableClasses.add(classType);
                     }
                 }
             } else {
-                // No team assigned yet, all classes available
-                availableClasses.addAll(Arrays.asList(allClasses));
+                // No team assigned yet, all classes available (except banned)
+                for (ClassType classType : allClasses) {
+                    if (classBanManager == null || !classBanManager.isClassBanned(classType)) {
+                        availableClasses.add(classType);
+                    }
+                }
             }
         } else {
-            // SOLO mode - all classes available
-            availableClasses.addAll(Arrays.asList(allClasses));
+            // SOLO mode - all classes available (except banned)
+            for (ClassType classType : allClasses) {
+                if (classBanManager == null || !classBanManager.isClassBanned(classType)) {
+                    availableClasses.add(classType);
+                }
+            }
         }
         
         if (availableClasses.isEmpty()) {

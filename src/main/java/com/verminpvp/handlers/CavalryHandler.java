@@ -140,11 +140,11 @@ public class CavalryHandler implements Listener {
             double newHealth = Math.min(player.getHealth() + 6.0, player.getMaxHealth());
             player.setHealth(newHealth);
             
-            // Set cooldown for dismount FIRST before message
-            cooldownManager.setCooldown(player.getUniqueId(), AbilityIds.MOUNT_DISMOUNT, 22);
+            // Set cooldown for dismount FIRST before message (changed from 22 to 18 seconds)
+            cooldownManager.setCooldown(player.getUniqueId(), AbilityIds.MOUNT_DISMOUNT, 18);
             
             // Show cooldown display
-            VerminPVP.getInstance().getCooldownDisplay().showCooldown(player, AbilityIds.MOUNT_DISMOUNT, "승마&하마", 22.0);
+            VerminPVP.getInstance().getCooldownDisplay().showCooldown(player, AbilityIds.MOUNT_DISMOUNT, "승마&하마", 18.0);
             
             player.sendMessage("§a말에서 내렸습니다! 체력 6 회복");
             return;
@@ -187,11 +187,11 @@ public class CavalryHandler implements Listener {
             }
         }, 2L); // 2 ticks delay
         
-        // Set cooldown
-        cooldownManager.setCooldown(player.getUniqueId(), AbilityIds.MOUNT_DISMOUNT, 22);
+        // Set cooldown (changed from 22 to 18 seconds)
+        cooldownManager.setCooldown(player.getUniqueId(), AbilityIds.MOUNT_DISMOUNT, 18);
         
         // Show cooldown display
-        VerminPVP.getInstance().getCooldownDisplay().showCooldown(player, AbilityIds.MOUNT_DISMOUNT, "승마&하마", 22.0);
+        VerminPVP.getInstance().getCooldownDisplay().showCooldown(player, AbilityIds.MOUNT_DISMOUNT, "승마&하마", 18.0);
         
         player.sendMessage("§a말을 소환했습니다!");
     }
@@ -216,13 +216,12 @@ public class CavalryHandler implements Listener {
         // Determine damage based on mounted status
         double damage = isMounted ? 8.0 : 6.0;
         
-        // Get direction player is facing
+        // Get player location
         Location playerLoc = player.getLocation();
-        org.bukkit.util.Vector direction = playerLoc.getDirection().normalize();
         
-        // Find entities in 3 block forward cone
+        // Find entities within 3 block radius (diameter 3 = radius 1.5)
         int hitCount = 0;
-        for (Entity entity : player.getNearbyEntities(3, 3, 3)) {
+        for (Entity entity : player.getNearbyEntities(1.5, 1.5, 1.5)) {
             if (!(entity instanceof LivingEntity) || entity == player) continue;
             
             // Skip player's own horse
@@ -230,18 +229,11 @@ public class CavalryHandler implements Listener {
             
             LivingEntity target = (LivingEntity) entity;
             
-            // Check if entity is in front of player (within 3 blocks)
-            org.bukkit.util.Vector toEntity = target.getLocation().toVector().subtract(playerLoc.toVector());
-            double distance = toEntity.length();
+            // Check if entity is within 1.5 block radius (3 block diameter)
+            double distance = target.getLocation().distance(playerLoc);
             
-            if (distance > 3.0) continue;
-            
-            // Check if entity is in front (dot product > 0)
-            toEntity.normalize();
-            double dotProduct = direction.dot(toEntity);
-            
-            if (dotProduct > 0.5) { // Within ~60 degree cone
-                // Deal damage (6 or 9 based on mounted status)
+            if (distance <= 1.5) {
+                // Deal damage (6 or 8 based on mounted status)
                 damageHandler.applyInstantDamage(target, damage);
                 hitCount++;
             }
@@ -359,11 +351,11 @@ public class CavalryHandler implements Listener {
                 double newHealth = Math.min(player.getHealth() + 6.0, player.getMaxHealth());
                 player.setHealth(newHealth);
                 
-                // Set cooldown for dismount
-                cooldownManager.setCooldown(player.getUniqueId(), AbilityIds.MOUNT_DISMOUNT, 22);
+                // Set cooldown for dismount (changed from 22 to 18 seconds)
+                cooldownManager.setCooldown(player.getUniqueId(), AbilityIds.MOUNT_DISMOUNT, 18);
                 
                 // Show cooldown display
-                VerminPVP.getInstance().getCooldownDisplay().showCooldown(player, AbilityIds.MOUNT_DISMOUNT, "승마&하마", 22.0);
+                VerminPVP.getInstance().getCooldownDisplay().showCooldown(player, AbilityIds.MOUNT_DISMOUNT, "승마&하마", 18.0);
                 
                 player.sendMessage("§a말에서 내렸습니다! 체력 6 회복");
             }

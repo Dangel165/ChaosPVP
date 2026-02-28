@@ -1,9 +1,11 @@
 package com.verminpvp.commands;
 
 import com.verminpvp.VerminPVP;
+import com.verminpvp.gui.ClassBanVoteGUI;
 import com.verminpvp.gui.ClassSelectionGUI;
 import com.verminpvp.gui.MapVoteGUI;
 import com.verminpvp.gui.TeamSelectionGUI;
+import com.verminpvp.managers.ClassBanManager;
 import com.verminpvp.managers.DraftPickManager;
 import com.verminpvp.managers.ExcludeManager;
 import com.verminpvp.managers.GameManager;
@@ -27,26 +29,31 @@ public class StartGameCommand implements CommandExecutor {
     private final ClassSelectionGUI classSelectionGUI;
     private final TeamSelectionGUI teamSelectionGUI;
     private final MapVoteGUI mapVoteGUI;
+    private final ClassBanVoteGUI classBanVoteGUI;
     private final GameManager gameManager;
     private final ExcludeManager excludeManager;
     private final MapManager mapManager;
     private final LobbyManager lobbyManager;
     private final DraftPickManager draftPickManager;
+    private final ClassBanManager classBanManager;
     
     public StartGameCommand(Plugin plugin, ClassSelectionGUI classSelectionGUI, 
                            TeamSelectionGUI teamSelectionGUI, MapVoteGUI mapVoteGUI,
-                           GameManager gameManager, ExcludeManager excludeManager, 
-                           MapManager mapManager, LobbyManager lobbyManager, 
-                           DraftPickManager draftPickManager) {
+                           ClassBanVoteGUI classBanVoteGUI, GameManager gameManager, 
+                           ExcludeManager excludeManager, MapManager mapManager, 
+                           LobbyManager lobbyManager, DraftPickManager draftPickManager,
+                           ClassBanManager classBanManager) {
         this.plugin = plugin;
         this.classSelectionGUI = classSelectionGUI;
         this.teamSelectionGUI = teamSelectionGUI;
         this.mapVoteGUI = mapVoteGUI;
+        this.classBanVoteGUI = classBanVoteGUI;
         this.gameManager = gameManager;
         this.excludeManager = excludeManager;
         this.mapManager = mapManager;
         this.lobbyManager = lobbyManager;
         this.draftPickManager = draftPickManager;
+        this.classBanManager = classBanManager;
     }
     
     @Override
@@ -180,13 +187,44 @@ public class StartGameCommand implements CommandExecutor {
         
         // Set callback for when voting is complete
         mapVoteGUI.setOnVoteComplete(() -> {
-            proceedToTeamOrClassSelection();
+            // After map voting, start class ban voting
+            startClassBanVoting();
         });
         
         // Open map vote GUI for all non-excluded players
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!excludeManager.isExcluded(player)) {
                 mapVoteGUI.openGUI(player);
+            }
+        }
+    }
+    
+    /**
+     * Start class ban voting phase
+     */
+    private void startClassBanVoting() {
+        Bukkit.broadcastMessage("§c클래스 밴 투표를 시작합니다!");
+        Bukkit.broadcastMessage("§7밴할 클래스 1개를 투표로 선택합니다.");
+        
+        // Reset voting data
+        classBanVoteGUI.resetVoting();
+        
+        // Clear previous banned class
+        gameManager.clearBannedClass();
+        
+        // Set callback for when voting is complete
+        classBanVoteGUI.setOnVoteComplete(() -> {
+            // Set the banned class in GameManager
+            gameManager.setBannedClass(classBanManager.getBannedClass());
+            
+            // Proceed to team or class selection
+            proceedToTeamOrClassSelection();
+        });
+        
+        // Open class ban vote GUI for all non-excluded players
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!excludeManager.isExcluded(player)) {
+                classBanVoteGUI.openGUI(player);
             }
         }
     }

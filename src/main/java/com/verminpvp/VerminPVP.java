@@ -49,6 +49,7 @@ public class VerminPVP extends JavaPlugin {
     private LobbyManager lobbyManager;
     private DataManager dataManager;
     private DraftPickManager draftPickManager;
+    private com.verminpvp.managers.ClassBanManager classBanManager;
     
     // UI
     private CooldownDisplay cooldownDisplay;
@@ -80,11 +81,13 @@ public class VerminPVP extends JavaPlugin {
     private FreezeProtectionHandler freezeProtectionHandler;
     private PlayerRespawnHandler playerRespawnHandler;
     private SkyIslandEffectHandler skyIslandEffectHandler;
+    private ItemDropHandler itemDropHandler;
     
     // GUI
     private ClassSelectionGUI classSelectionGUI;
     private TeamSelectionGUI teamSelectionGUI;
     private MapVoteGUI mapVoteGUI;
+    private com.verminpvp.gui.ClassBanVoteGUI classBanVoteGUI;
     
     @Override
     public void onEnable() {
@@ -140,6 +143,7 @@ public class VerminPVP extends JavaPlugin {
         excludeManager = new ExcludeManager();
         mapManager = new MapManager();
         lobbyManager = new LobbyManager();
+        classBanManager = new com.verminpvp.managers.ClassBanManager();
         gameManager = new GameManager(this, classManager, teamManager);
         cooldownDisplay = new CooldownDisplay(this, cooldownManager);
         
@@ -207,7 +211,7 @@ public class VerminPVP extends JavaPlugin {
             itemProvider, damageHandler);
         
         vitalityCutterHandler = new VitalityCutterHandler(this, classManager,
-            damageHandler, gameManager, teamManager);
+            damageHandler, gameManager, teamManager, itemProvider);
         
         marathonerHandler = new MarathonerHandler(this, classManager, cooldownManager, itemProvider);
         
@@ -227,15 +231,25 @@ public class VerminPVP extends JavaPlugin {
         
         skyIslandEffectHandler = new SkyIslandEffectHandler(this);
         
+        itemDropHandler = new ItemDropHandler(classManager, gameManager, itemProvider);
+        
         classSelectionGUI = new ClassSelectionGUI(this, classManager);
         teamSelectionGUI = new TeamSelectionGUI(teamManager, classSelectionGUI, excludeManager);
         mapVoteGUI = new MapVoteGUI(this, mapManager, excludeManager);
+        classBanVoteGUI = new com.verminpvp.gui.ClassBanVoteGUI(this, classBanManager, excludeManager);
         
         // Initialize DraftPickManager
         draftPickManager = new DraftPickManager(this, teamManager, classManager, classSelectionGUI);
         
         // Set GameManager in DraftPickManager
         draftPickManager.setGameManager(gameManager);
+        
+        // Set managers in ClassSelectionGUI
+        classSelectionGUI.setExcludeManager(excludeManager);
+        classSelectionGUI.setGameManager(gameManager);
+        classSelectionGUI.setTeamManager(teamManager);
+        classSelectionGUI.setDraftPickManager(draftPickManager);
+        classSelectionGUI.setClassBanManager(classBanManager);
         
         // Set handlers in ClassManager
         classManager.setHandlers(scientistHandler, plagueSpreaderHandler,
@@ -274,9 +288,11 @@ public class VerminPVP extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(playerQuitHandler, this);
         Bukkit.getPluginManager().registerEvents(freezeProtectionHandler, this);
         Bukkit.getPluginManager().registerEvents(playerRespawnHandler, this);
+        Bukkit.getPluginManager().registerEvents(itemDropHandler, this);
         Bukkit.getPluginManager().registerEvents(classSelectionGUI, this);
         Bukkit.getPluginManager().registerEvents(teamSelectionGUI, this);
         Bukkit.getPluginManager().registerEvents(mapVoteGUI, this);
+        Bukkit.getPluginManager().registerEvents(classBanVoteGUI, this);
         
         getLogger().info("Event listeners registered");
     }
@@ -290,7 +306,8 @@ public class VerminPVP extends JavaPlugin {
         getCommand("chaospvp").setTabCompleter(classCommand);
         
         StartGameCommand startGameCommand = new StartGameCommand(this, classSelectionGUI, 
-            teamSelectionGUI, mapVoteGUI, gameManager, excludeManager, mapManager, lobbyManager, draftPickManager);
+            teamSelectionGUI, mapVoteGUI, classBanVoteGUI, gameManager, excludeManager, 
+            mapManager, lobbyManager, draftPickManager, classBanManager);
         getCommand("게임시작").setExecutor(startGameCommand);
         
         // Set StartGameCommand in TeamSelectionGUI
@@ -299,7 +316,8 @@ public class VerminPVP extends JavaPlugin {
         // Set DraftPickManager in ClassSelectionGUI
         classSelectionGUI.setDraftPickManager(draftPickManager);
         
-        EndGameCommand endGameCommand = new EndGameCommand(classManager, gameManager, teamManager);
+        EndGameCommand endGameCommand = new EndGameCommand(classManager, gameManager, 
+            teamManager, classBanManager);
         getCommand("게임종료").setExecutor(endGameCommand);
         
         GameModeCommand gameModeCommand = new GameModeCommand(gameManager);
@@ -386,6 +404,10 @@ public class VerminPVP extends JavaPlugin {
     
     public DataManager getDataManager() {
         return dataManager;
+    }
+    
+    public MapManager getMapManager() {
+        return mapManager;
     }
     
     public CooldownDisplay getCooldownDisplay() {
