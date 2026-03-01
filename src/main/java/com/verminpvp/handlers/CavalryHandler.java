@@ -140,7 +140,7 @@ public class CavalryHandler implements Listener {
             double newHealth = Math.min(player.getHealth() + 6.0, player.getMaxHealth());
             player.setHealth(newHealth);
             
-            // Set cooldown for dismount FIRST before message (changed from 22 to 18 seconds)
+            // Set cooldown for dismount FIRST before message (18 seconds)
             cooldownManager.setCooldown(player.getUniqueId(), AbilityIds.MOUNT_DISMOUNT, 18);
             
             // Show cooldown display
@@ -187,7 +187,7 @@ public class CavalryHandler implements Listener {
             }
         }, 2L); // 2 ticks delay
         
-        // Set cooldown (changed from 22 to 18 seconds)
+        // Set cooldown (18 seconds)
         cooldownManager.setCooldown(player.getUniqueId(), AbilityIds.MOUNT_DISMOUNT, 18);
         
         // Show cooldown display
@@ -351,7 +351,7 @@ public class CavalryHandler implements Listener {
                 double newHealth = Math.min(player.getHealth() + 6.0, player.getMaxHealth());
                 player.setHealth(newHealth);
                 
-                // Set cooldown for dismount (changed from 22 to 18 seconds)
+                // Set cooldown for dismount (18 seconds)
                 cooldownManager.setCooldown(player.getUniqueId(), AbilityIds.MOUNT_DISMOUNT, 18);
                 
                 // Show cooldown display

@@ -291,8 +291,7 @@ public class JugglerHandler implements Listener {
     private void handleThrowTime(Player player, ItemStack item) {
         // Apply Slowness V to all entities within 10 blocks and freeze their position
         int affectedCount = 0;
-        java.util.List<UUID> frozenEntities = new java.util.ArrayList<>();
-        java.util.Map<UUID, Location> frozenLocations = new java.util.HashMap<>();
+        java.util.List<UUID> affectedEntityIds = new java.util.ArrayList<>();
         
         for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
             if (entity instanceof LivingEntity && entity != player) {
@@ -315,47 +314,22 @@ public class JugglerHandler implements Listener {
                 // Apply Slowness V for 2.5 seconds (50 ticks)
                 target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 50, 4, false, true, true));
                 
-                // Freeze position (like Time Engraver)
+                // Freeze position (complete position lock like Time Engraver)
                 Location frozenLoc = target.getLocation().clone();
-                frozenEntities.add(target.getUniqueId());
-                frozenLocations.put(target.getUniqueId(), frozenLoc);
+                frozenEntities.put(target.getUniqueId(), frozenLoc);
+                affectedEntityIds.add(target.getUniqueId());
                 
                 affectedCount++;
             }
         }
         
-        // Schedule position enforcement task for 2.5 seconds (50 ticks)
-        if (!frozenEntities.isEmpty()) {
-            org.bukkit.scheduler.BukkitTask freezeTask = new org.bukkit.scheduler.BukkitRunnable() {
-                int ticksRemaining = 50; // 2.5 seconds
-                
-                @Override
-                public void run() {
-                    if (ticksRemaining <= 0) {
-                        cancel();
-                        return;
-                    }
-                    
-                    // Enforce frozen positions for all affected entities
-                    for (UUID entityId : frozenEntities) {
-                        Entity entity = org.bukkit.Bukkit.getEntity(entityId);
-                        if (entity instanceof LivingEntity && entity.isValid()) {
-                            Location frozenLoc = frozenLocations.get(entityId);
-                            if (frozenLoc != null) {
-                                // Teleport entity back to frozen position if they moved
-                                Location currentLoc = entity.getLocation();
-                                if (currentLoc.getX() != frozenLoc.getX() || 
-                                    currentLoc.getY() != frozenLoc.getY() || 
-                                    currentLoc.getZ() != frozenLoc.getZ()) {
-                                    entity.teleport(frozenLoc);
-                                }
-                            }
-                        }
-                    }
-                    
-                    ticksRemaining--;
+        // Schedule unfreezing after 2.5 seconds (50 ticks)
+        if (!affectedEntityIds.isEmpty()) {
+            org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                for (UUID entityId : affectedEntityIds) {
+                    frozenEntities.remove(entityId);
                 }
-            }.runTaskTimer(plugin, 0L, 1L); // Run every tick
+            }, 50L); // 2.5 seconds
         }
         
         // Reset Light Thing cooldown
@@ -364,7 +338,7 @@ public class JugglerHandler implements Listener {
         // Remove throw time item
         item.setAmount(item.getAmount() - 1);
         
-        player.sendMessage("§a투척 시간 사용! §e" + affectedCount + "개 영향");
+        player.sendMessage("§a투척 시간 사용! §e" + affectedCount + "명 영향");
         player.sendMessage("§a가벼운 것 쿨타임 초기화!");
     }
     

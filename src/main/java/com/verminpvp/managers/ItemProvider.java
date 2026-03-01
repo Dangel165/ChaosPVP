@@ -561,27 +561,6 @@ public class ItemProvider {
             
             item.setItemMeta(meta);
             return item;
-        } else if (itemId.equals("life_cut")) {
-            ItemStack item = new ItemStack(Material.IRON_SWORD);
-            ItemMeta meta = item.getItemMeta();
-            
-            meta.setDisplayName("§4§l생명 절단");
-            List<String> lore = new ArrayList<>();
-            lore.add("§7우클릭: 대상에게 2 즉시 피해 (1칸)");
-            lore.add("§7사용 후 사라짐");
-            meta.setLore(lore);
-            
-            PersistentDataContainer pdc = meta.getPersistentDataContainer();
-            pdc.set(classItemKey, PersistentDataType.STRING, "CRITICAL_CUTTER");
-            pdc.set(itemIdKey, PersistentDataType.STRING, "life_cut");
-            pdc.set(infiniteDurabilityKey, PersistentDataType.BYTE, (byte) 1);
-            
-            meta.setUnbreakable(true);
-            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-            
-            item.setItemMeta(meta);
-            return item;
         }
         return null;
     }
@@ -942,8 +921,8 @@ public class ItemProvider {
                 needleMeta.setDisplayName("§6시곗바늘 꿰메기");
                 List<String> needleLore = new ArrayList<>();
                 needleLore.add("§7우클릭: 투사체 발사");
-                needleLore.add("§7피해량: 6 (3칸)");
-                needleLore.add("§7구속 대상: 8 즉시 피해 (4칸)");
+                needleLore.add("§7피해량: 3 (1.5칸)");
+                needleLore.add("§7구속 대상: 4 즉시 피해 (2칸)");
                 needleLore.add("§7적중: 어둠 + 실명 (3초)");
                 needleLore.add("§7쿨타임: 12초");
                 needleMeta.setLore(needleLore);
@@ -1027,7 +1006,7 @@ public class ItemProvider {
                 mountLore.add("§7말: 체력 공유");
                 mountLore.add("§7말: 피해의 절반을 탑승자에게 전달");
                 mountLore.add("§7탑승 중 사용: 하마 + 체력 6 회복");
-                mountLore.add("§7쿨타임: 22초");
+                mountLore.add("§7쿨타임: 18초");
                 mountMeta.setLore(mountLore);
                 
                 PersistentDataContainer mountPdc = mountMeta.getPersistentDataContainer();
@@ -1043,7 +1022,7 @@ public class ItemProvider {
                 
                 sweepMeta.setDisplayName("§c휩쓸기");
                 List<String> sweepLore = new ArrayList<>();
-                sweepLore.add("§7우클릭: 전방 3칸 범위 공격");
+                sweepLore.add("§7우클릭: 자신을 중심으로 지름 3칸 범위 공격");
                 sweepLore.add("§7피해량: 6 (3칸)");
                 sweepLore.add("§7기마 시: 8 피해 (4칸)");
                 sweepLore.add("§7쿨타임: 6초");
@@ -1105,13 +1084,13 @@ public class ItemProvider {
      */
     private ItemStack createVitalityCutterItem(String itemId) {
         if (itemId.equals("life_cut")) {
-            ItemStack item = new ItemStack(Material.IRON_SWORD);
+            ItemStack item = new ItemStack(Material.GHAST_TEAR);
             ItemMeta meta = item.getItemMeta();
             
             meta.setDisplayName("§4§l생명 절단");
             List<String> lore = new ArrayList<>();
-            lore.add("§7우클릭: 대상에게 2 즉시 피해 (1칸)");
-            lore.add("§7범위: 1칸");
+            lore.add("§7우클릭: 대상에게 2 즉시 피해");
+            lore.add("§7범위: 5칸");
             lore.add("§c사용 후 사라짐");
             meta.setLore(lore);
             

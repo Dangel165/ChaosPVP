@@ -269,7 +269,6 @@ public class ClassManager {
                 
             case CRITICAL_CUTTER:
                 player.getInventory().addItem(itemProvider.createSpecialItem(ClassType.CRITICAL_CUTTER, "guaranteed_critical"));
-                player.getInventory().addItem(itemProvider.createSpecialItem(ClassType.CRITICAL_CUTTER, "life_cut"));
                 break;
                 
             case NAVIGATOR:
@@ -317,6 +316,10 @@ public class ClassManager {
                 
             case MARATHONER:
                 player.getInventory().addItem(itemProvider.createSpecialItem(ClassType.MARATHONER, "crouching_start"));
+                break;
+                
+            case VITALITY_CUTTER:
+                player.getInventory().addItem(itemProvider.createSpecialItem(ClassType.VITALITY_CUTTER, "life_cut"));
                 break;
         }
     }

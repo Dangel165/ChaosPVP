@@ -29,7 +29,7 @@ import org.bukkit.inventory.ItemStack;
  * - Glowing effect in FFA mode
  * 
  * Life Cut (생명 절단):
- * - Right-click: Deal 2 instant damage (1 heart) to target within 1 block
+ * - Right-click: Deal 2 instant damage (1 heart) to target within 5 blocks
  * - Consumes item after use
  */
 public class VitalityCutterHandler implements Listener {
@@ -117,11 +117,11 @@ public class VitalityCutterHandler implements Listener {
         
         event.setCancelled(true);
         
-        // Find nearest entity within 1 block
+        // Find nearest entity within 5 blocks
         LivingEntity target = null;
-        double minDistance = 1.0;
+        double minDistance = 5.0;
         
-        for (Entity entity : player.getNearbyEntities(1.0, 1.0, 1.0)) {
+        for (Entity entity : player.getNearbyEntities(5.0, 5.0, 5.0)) {
             if (!(entity instanceof LivingEntity) || entity == player) continue;
             
             LivingEntity livingEntity = (LivingEntity) entity;
