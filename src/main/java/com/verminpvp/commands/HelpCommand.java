@@ -48,6 +48,17 @@ public class HelpCommand implements CommandExecutor {
         player.sendMessage("§a/입자끄기 §7- 맹독장판 입자를 제거합니다");
         player.sendMessage("§a/도움말 §7- 이 도움말을 표시합니다");
         player.sendMessage("");
+        player.sendMessage("§e§l[ 음악 설정 ]");
+        player.sendMessage("§a/음악설정 url <유튜브링크> §7- 유튜브 링크 설정 (클릭 시 브라우저 열림)");
+        player.sendMessage("§a/음악설정 사운드 <사운드명> §7- 마인크래프트 내장 사운드 설정");
+        player.sendMessage("§a/음악설정 볼륨 <0.0-1.0> §7- 음악 볼륨 조절");
+        player.sendMessage("§a/음악설정 피치 <0.5-2.0> §7- 음악 피치 조절");
+        player.sendMessage("§a/음악설정 정보 §7- 현재 음악 설정 확인");
+        player.sendMessage("§a/음악설정 테스트 §7- 음악 테스트 재생");
+        player.sendMessage("§a/음악설정 정지 §7- 재생 중인 음악 정지");
+        player.sendMessage("§a/음악설정 비활성화 §7- 음악 시스템 비활성화");
+        player.sendMessage("§7※ 음악은 맵 도착 10초 후 자동 재생 (기본: 비활성화)");
+        player.sendMessage("");
         player.sendMessage("§e§l게임 규칙:");
         player.sendMessage("§7- 게임 시간: §f10분");
         player.sendMessage("§7- 시작 체력: §f20하트 (40HP)");

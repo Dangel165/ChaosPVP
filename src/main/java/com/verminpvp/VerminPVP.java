@@ -50,6 +50,7 @@ public class VerminPVP extends JavaPlugin {
     private DataManager dataManager;
     private DraftPickManager draftPickManager;
     private com.verminpvp.managers.ClassBanManager classBanManager;
+    private com.verminpvp.managers.MusicManager musicManager;
     
     // UI
     private CooldownDisplay cooldownDisplay;
@@ -150,6 +151,9 @@ public class VerminPVP extends JavaPlugin {
         // Initialize DataManager (must be after MapManager and LobbyManager)
         dataManager = new DataManager(this, mapManager, lobbyManager);
         
+        // Initialize MusicManager (must be after DataManager)
+        musicManager = new com.verminpvp.managers.MusicManager(this, dataManager);
+        
         // Set ItemProvider in ClassManager
         classManager.setItemProvider(itemProvider);
         
@@ -157,7 +161,7 @@ public class VerminPVP extends JavaPlugin {
         classManager.setManagers(teamManager, gameManager);
         
         // Set ExcludeManager, MapManager, and LobbyManager in GameManager
-        gameManager.setManagers(excludeManager, mapManager, lobbyManager);
+        gameManager.setManagers(excludeManager, mapManager, lobbyManager, musicManager);
         
         getLogger().info("Managers initialized");
     }
@@ -364,6 +368,9 @@ public class VerminPVP extends JavaPlugin {
         
         PracticeModeClassCommand practiceModeClassCommand = new PracticeModeClassCommand(classSelectionGUI, gameManager);
         getCommand("연습클래스").setExecutor(practiceModeClassCommand);
+        
+        com.verminpvp.commands.MusicCommand musicCommand = new com.verminpvp.commands.MusicCommand(musicManager);
+        getCommand("음악설정").setExecutor(musicCommand);
         
         getLogger().info("Commands registered");
     }

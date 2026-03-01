@@ -1,0 +1,32 @@
+{
+  "chaospvp.game_start": {
+    "sounds": [
+      {
+        "name": "chaospvp/game_start",
+        "stream": true,
+        "volume": 1.0,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "chaospvp.game_start_epic": {
+    "sounds": [
+      {
+        "name": "chaospvp/game_start_epic",
+        "stream": true,
+        "volume": 1.0,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "chaospvp.game_start_intense": {
+    "sounds": [
+      {
+        "name": "chaospvp/game_start_intense",
+        "stream": true,
+        "volume": 1.0,
+        "pitch": 1.0
+      }
+    ]
+  }
+}

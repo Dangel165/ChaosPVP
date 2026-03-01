@@ -64,20 +64,29 @@ public class ClassBanManager {
             voteCounts.put(classType, voteCounts.getOrDefault(classType, 0) + 1);
         }
         
-        // Find class with most votes
-        ClassType mostVoted = null;
+        // Find maximum vote count
         int maxVotes = 0;
-        
-        for (Map.Entry<ClassType, Integer> entry : voteCounts.entrySet()) {
-            if (entry.getValue() > maxVotes) {
-                maxVotes = entry.getValue();
-                mostVoted = entry.getKey();
-            } else if (entry.getValue() == maxVotes && mostVoted != null) {
-                // Tie - randomly select between tied classes
-                if (Math.random() < 0.5) {
-                    mostVoted = entry.getKey();
-                }
+        for (int votes : voteCounts.values()) {
+            if (votes > maxVotes) {
+                maxVotes = votes;
             }
+        }
+        
+        // Collect all classes with maximum votes (handle ties)
+        java.util.List<ClassType> tiedClasses = new java.util.ArrayList<>();
+        for (Map.Entry<ClassType, Integer> entry : voteCounts.entrySet()) {
+            if (entry.getValue() == maxVotes) {
+                tiedClasses.add(entry.getKey());
+            }
+        }
+        
+        // If there's a tie, randomly select one from tied classes
+        ClassType mostVoted;
+        if (tiedClasses.size() > 1) {
+            int randomIndex = (int) (Math.random() * tiedClasses.size());
+            mostVoted = tiedClasses.get(randomIndex);
+        } else {
+            mostVoted = tiedClasses.get(0);
         }
         
         bannedClass = mostVoted;

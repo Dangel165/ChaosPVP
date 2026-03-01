@@ -81,6 +81,10 @@ commands:
     description: Add a spawn point for map slot 2
     usage: /2번스폰추가
     permission: chaospvp.admin
+  음악설정:
+    description: Configure game start music
+    usage: /음악설정 [url|사운드|볼륨|피치|정보|테스트|정지]
+    permission: chaospvp.admin
 
 permissions:
   chaospvp.use:

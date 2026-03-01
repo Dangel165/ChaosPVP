@@ -142,6 +142,93 @@ public class DataManager {
         }
     }
     
+    // ===== Music Settings =====
+    
+    /**
+     * Get music URL
+     */
+    public String getMusicUrl() {
+        if (config == null) return null;
+        return config.getString("music.url");
+    }
+    
+    /**
+     * Set music URL
+     */
+    public void setMusicUrl(String url) {
+        if (config == null) config = new YamlConfiguration();
+        config.set("music.url", url);
+        saveData();
+    }
+    
+    /**
+     * Get music sound name
+     */
+    public String getMusicSound() {
+        if (config == null) return "MUSIC_DISC_PIGSTEP";
+        return config.getString("music.sound", "MUSIC_DISC_PIGSTEP");
+    }
+    
+    /**
+     * Set music sound name
+     */
+    public void setMusicSound(String sound) {
+        if (config == null) config = new YamlConfiguration();
+        config.set("music.sound", sound);
+        saveData();
+    }
+    
+    /**
+     * Check if using music URL
+     */
+    public boolean useMusicUrl() {
+        if (config == null) return false;
+        return config.getBoolean("music.useUrl", false);
+    }
+    
+    /**
+     * Set whether to use music URL
+     */
+    public void setUseMusicUrl(boolean use) {
+        if (config == null) config = new YamlConfiguration();
+        config.set("music.useUrl", use);
+        saveData();
+    }
+    
+    /**
+     * Get music volume
+     */
+    public float getMusicVolume() {
+        if (config == null) return 1.0f;
+        return (float) config.getDouble("music.volume", 1.0);
+    }
+    
+    /**
+     * Set music volume
+     */
+    public void setMusicVolume(float volume) {
+        if (config == null) config = new YamlConfiguration();
+        config.set("music.volume", volume);
+        saveData();
+    }
+    
+    /**
+     * Get music pitch
+     */
+    public float getMusicPitch() {
+        if (config == null) return 1.0f;
+        return (float) config.getDouble("music.pitch", 1.0);
+    }
+    
+    /**
+     * Set music pitch
+     */
+    public void setMusicPitch(float pitch) {
+        if (config == null) config = new YamlConfiguration();
+        config.set("music.pitch", pitch);
+        saveData();
+    }
+    
     /**
      * Save all data to file
      */

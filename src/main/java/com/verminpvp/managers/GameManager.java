@@ -32,6 +32,7 @@ public class GameManager {
     private ExcludeManager excludeManager;
     private MapManager mapManager;
     private LobbyManager lobbyManager;
+    private com.verminpvp.managers.MusicManager musicManager;
     
     private boolean gameActive = false;
     private boolean countdownActive = false;
@@ -122,12 +123,13 @@ public class GameManager {
     }
     
     /**
-     * Set the ExcludeManager, MapManager, and LobbyManager (called after initialization)
+     * Set the ExcludeManager, MapManager, LobbyManager, and MusicManager (called after initialization)
      */
-    public void setManagers(ExcludeManager excludeManager, MapManager mapManager, LobbyManager lobbyManager) {
+    public void setManagers(ExcludeManager excludeManager, MapManager mapManager, LobbyManager lobbyManager, com.verminpvp.managers.MusicManager musicManager) {
         this.excludeManager = excludeManager;
         this.mapManager = mapManager;
         this.lobbyManager = lobbyManager;
+        this.musicManager = musicManager;
     }
     
     /**
@@ -466,6 +468,15 @@ public class GameManager {
         Bukkit.broadcastMessage("§e게임 모드: " + gameMode.getDisplayName());
         Bukkit.broadcastMessage("§e게임 시간: 5분");
         
+        // Play game start music after 10 seconds (after freeze period ends) - OPTIONAL
+        if (musicManager != null && musicManager.isMusicEnabled()) {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (gameActive) {
+                    musicManager.playGameStartMusic();
+                }
+            }, 200L); // 10 seconds = 200 ticks
+        }
+        
         // Create boss bar for time display
         createTimeBossBar();
         
@@ -674,6 +685,11 @@ public class GameManager {
         // Remove boss bar
         removeTimeBossBar();
         
+        // Stop game music
+        if (musicManager != null) {
+            musicManager.stopAllMusic();
+        }
+        
         // Stop sky island effects if active
         VerminPVP pluginInstance = (VerminPVP) plugin;
         if (pluginInstance.getSkyIslandEffectHandler() != null) {
@@ -736,6 +752,11 @@ public class GameManager {
         
         // Remove boss bar
         removeTimeBossBar();
+        
+        // Stop game music
+        if (musicManager != null) {
+            musicManager.stopAllMusic();
+        }
         
         // Stop sky island effects if active
         VerminPVP pluginInstance = (VerminPVP) plugin;
